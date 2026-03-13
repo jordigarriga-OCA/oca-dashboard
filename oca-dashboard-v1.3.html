@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>OCA LATAM · BI Dashboard v6</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+:root{--bg:#0d0f14;--bg2:#13161e;--bg3:#1a1e28;--bdr:#252a38;--bdr2:#2e3445;--tx:#e8eaf0;--tx2:#8b91a8;--tx3:#555d75;--ac:#4f8cff;--ac2:#7b5cf0;--gr:#22c97a;--rd:#ff4d6a;--yl:#f5c542;--fn:'DM Mono',monospace;--fs:'DM Sans',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--tx);font-family:var(--fs);font-size:13px;height:100vh;overflow:hidden;}
+.shell{display:flex;height:100vh;}
+.sb{width:188px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;}
+.sb-logo{padding:15px 14px 11px;border-bottom:1px solid var(--bdr);}
+.sb-logo h1{font-size:13px;font-weight:600;}
+.sb-logo p{font-size:10px;color:var(--tx3);font-family:var(--fn);margin-top:2px;}
+.sb-nav{padding:7px 0;flex:1;}
+.ni{display:flex;align-items:center;gap:7px;padding:7px 14px;cursor:pointer;color:var(--tx2);font-size:12px;transition:.1s;border-left:2px solid transparent;}
+.ni:hover{color:var(--tx);background:var(--bg3);}
+.ni.on{color:var(--ac);background:rgba(79,140,255,.07);border-left-color:var(--ac);font-weight:500;}
+.sb-foot{padding:9px 14px;border-top:1px solid var(--bdr);font-size:10px;color:var(--tx3);font-family:var(--fn);line-height:1.6;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bdr);height:43px;padding:0 15px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar h2{font-size:13px;font-weight:600;}
+.fbar{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:5px 15px;display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
+.frow{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.fl{font-size:10px;color:var(--tx3);font-family:var(--fn);white-space:nowrap;min-width:30px;}
+.fg{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
+.fb{padding:2px 7px;border-radius:3px;border:1px solid var(--bdr2);background:var(--bg3);color:var(--tx2);font-size:11px;cursor:pointer;transition:.1s;font-family:var(--fs);}
+.fb:hover{border-color:var(--ac);color:var(--tx);}
+.fb.on{background:rgba(79,140,255,.14);border-color:var(--ac);color:var(--ac);font-weight:500;}
+.fsep{width:1px;height:14px;background:var(--bdr);margin:0 3px;flex-shrink:0;}
+.content{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;}
+.page{display:none;flex-direction:column;flex:1;min-height:0;}.page.on{display:flex;}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:14px;}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:6px;padding:10px;cursor:pointer;transition:.1s;}
+.card:hover{border-color:var(--bdr2);}.card.sel{border-color:var(--ac);}
+.c-cn{font-size:10px;font-family:var(--fn);color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.c-v{font-size:15px;font-weight:600;font-family:var(--fn);margin-bottom:2px;}
+.c-m{font-size:10px;color:var(--tx2);margin-bottom:5px;}
+.c-r{display:flex;align-items:center;justify-content:space-between;margin-top:2px;}
+.c-l{font-size:10px;color:var(--tx3);}
+.rag{width:6px;height:6px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:3px;}
+.rag.g{background:var(--gr);box-shadow:0 0 4px rgba(34,201,122,.5);}
+.rag.y{background:var(--yl);box-shadow:0 0 4px rgba(245,197,66,.5);}
+.rag.r{background:var(--rd);box-shadow:0 0 4px rgba(255,77,106,.5);}
+.pill{display:inline-flex;padding:1px 5px;border-radius:3px;font-size:10px;font-family:var(--fn);font-weight:500;}
+.pill.g{background:rgba(34,201,122,.12);color:var(--gr);}
+.pill.r{background:rgba(255,77,106,.12);color:var(--rd);}
+.pill.y{background:rgba(245,197,66,.12);color:var(--yl);}
+.pnl-wrap{display:flex;gap:11px;flex:1;min-height:0;}
+.ot-panel{width:205px;background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;display:flex;flex-direction:column;flex-shrink:0;transition:opacity .15s;}
+.ot-panel.hidden{display:none;}
+.ot-hdr{padding:8px 10px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.ot-hdr span{font-size:11px;font-weight:500;}
+.ot-search{padding:6px 8px;border-bottom:1px solid var(--bdr);}
+.ot-search input{width:100%;background:var(--bg3);border:1px solid var(--bdr2);border-radius:3px;padding:3px 6px;color:var(--tx);font-size:11px;font-family:var(--fs);outline:none;}
+.ot-search input:focus{border-color:var(--ac);}
+.ot-total{padding:6px 10px;font-size:11px;font-weight:500;cursor:pointer;color:var(--tx2);border-left:2px solid transparent;border-bottom:1px solid var(--bdr);}
+.ot-total:hover{background:var(--bg3);color:var(--tx);}
+.ot-total.on{color:var(--ac);border-left-color:var(--ac);}
+.ot-list{flex:1;overflow-y:auto;padding:2px 0;}
+.ot-item{padding:4px 10px;cursor:pointer;font-size:11px;color:var(--tx2);border-left:2px solid transparent;line-height:1.4;}
+.ot-item:hover{background:var(--bg3);color:var(--tx);}
+.ot-item.on{color:var(--ac);background:rgba(79,140,255,.06);border-left-color:var(--ac);}
+.ot-item .ot-name{font-size:10px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ot-item .ot-sales{font-size:9.5px;color:var(--tx3);font-family:var(--fn);}
+.pnl-area{flex:1;display:flex;flex-direction:column;min-width:0;gap:10px;}
+.tabs{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.tab{padding:6px 13px;font-size:12px;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;transition:.1s;margin-bottom:-1px;}
+.tab:hover{color:var(--tx);}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:500;}
+.tab-content{display:none;flex:1;overflow:hidden;flex-direction:column;min-height:0;}
+.tab-content.on{display:flex;}
+.tbox{background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;}
+.tbox-hdr{padding:8px 13px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:5px;}
+.tbox-title{font-size:12px;font-weight:500;}
+.tbox-cur{font-size:10px;font-family:var(--fn);color:var(--tx3);padding:1px 5px;background:var(--bg3);border-radius:3px;border:1px solid var(--bdr);}
+.tbox-ctrls{display:flex;gap:3px;align-items:center;flex-wrap:wrap;}
+.rb{padding:2px 7px;border-radius:3px;border:1px solid var(--bdr2);background:transparent;color:var(--tx2);font-size:11px;cursor:pointer;transition:.1s;font-family:var(--fs);}
+.rb.on{background:rgba(79,140,255,.13);border-color:var(--ac);color:var(--ac);}
+.tw{overflow:auto;flex:1;}
+.month-grid{display:flex;gap:3px;flex-wrap:wrap;padding:5px 13px;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.mb{padding:2px 6px;border-radius:3px;border:1px solid var(--bdr2);background:var(--bg3);color:var(--tx2);font-size:10.5px;cursor:pointer;transition:.1s;font-family:var(--fn);}
+.mb:hover{border-color:var(--ac);color:var(--tx);}
+.mb.on{background:rgba(79,140,255,.14);border-color:var(--ac);color:var(--ac);}
+table.pnl{width:100%;border-collapse:collapse;}
+table.pnl th{padding:5px 8px;font-size:10px;font-family:var(--fn);color:var(--tx3);text-align:right;white-space:nowrap;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:2;}
+table.pnl th:first-child{text-align:left;position:sticky;left:0;background:var(--bg);z-index:3;min-width:160px;padding-left:13px;}
+table.pnl td{padding:4px 8px;font-size:11px;text-align:right;border-bottom:1px solid rgba(37,42,56,.32);white-space:nowrap;font-family:var(--fn);}
+table.pnl td:first-child{text-align:left;position:sticky;left:0;background:var(--bg2);z-index:1;font-family:var(--fs);padding-left:13px;}
+table.pnl tr:hover td{background:rgba(255,255,255,.016);}
+table.pnl tr:hover td:first-child{background:rgba(20,24,36,.97);}
+.r-sales td{background:rgba(79,140,255,.06)!important;}
+.r-sales td:first-child{background:rgba(79,140,255,.1)!important;color:var(--ac);font-weight:600;font-family:var(--fs)!important;}
+.r-up td{background:rgba(34,201,122,.04)!important;}
+.r-up td:first-child{background:rgba(34,201,122,.07)!important;color:var(--gr);font-weight:600;font-family:var(--fs)!important;}
+.r-opdiv td{background:rgba(123,92,240,.04)!important;}
+.r-opdiv td:first-child{background:rgba(123,92,240,.07)!important;color:var(--ac2);font-weight:600;font-family:var(--fs)!important;}
+.r-bai td{background:rgba(79,140,255,.08)!important;}
+.r-bai td:first-child{background:rgba(79,140,255,.12)!important;color:var(--ac);font-weight:600;font-family:var(--fs)!important;}
+.r-total td{border-top:1px solid var(--bdr2);border-bottom:1px solid var(--bdr2)!important;}
+.r-total td:first-child{font-weight:600;font-family:var(--fs)!important;}
+.r-sec td:first-child{color:var(--tx2);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fn)!important;}
+.r-grp td:first-child{color:var(--tx2);padding-left:20px!important;font-size:11px;}
+.r-epi td:first-child{color:var(--tx3);padding-left:32px!important;font-size:10.5px;}
+.r-epi td{font-size:10.5px;color:var(--tx3);}
+.exp{cursor:pointer;user-select:none;}
+.exp::before{content:"▶";font-size:8px;color:var(--tx3);margin-right:4px;display:inline-block;transition:.12s;}
+.exp.op::before{transform:rotate(90deg);}
+.vp{color:var(--gr)!important;}.vn{color:var(--rd)!important;}.vnu{color:var(--tx2)!important;}.rd{color:var(--rd)!important;}
+.pct{font-size:10px;color:var(--tx3);}
+.chart-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;padding:11px;flex-shrink:0;}
+.chart-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;flex-wrap:wrap;gap:5px;}
+.chart-title{font-size:11.5px;font-weight:500;}
+.yr-sep{border-left:2px solid var(--bdr2)!important;}
+#tw-evol table.pnl td:first-child,#tw-evol table.pnl th:first-child{min-width:140px;}
+.r-sales td:first-child,.r-sales th:first-child{background:#151823!important;}
+.r-up td:first-child{background:#131c1a!important;}
+.r-opdiv td:first-child{background:#151421!important;}
+.r-bai td:first-child{background:#141628!important;}
+.r-total td:first-child{background:#13161e!important;}
+.r-sec td:first-child{background:#13161e!important;}
+.r-grp td:first-child{background:#13161e!important;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px;}
+select.rb{appearance:none;padding-right:16px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23555d75'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;}
+.var-wrap{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;}
+.var-tabs{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.var-tab-content{display:none;flex:1;overflow:hidden;flex-direction:column;min-height:0;}
+.var-tab-content.on{display:flex;}
+table.var-pnl{width:auto;min-width:100%;border-collapse:collapse;}
+table.var-pnl th{padding:4px 6px;font-size:9.5px;font-family:var(--fn);color:var(--tx3);text-align:right;white-space:nowrap;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:2;}
+table.var-pnl th:first-child{text-align:left;position:sticky;left:0;background:var(--bg);z-index:3;width:155px;min-width:155px;max-width:155px;padding-left:10px;}
+table.var-pnl td{padding:3px 6px;font-size:10.5px;text-align:right;border-bottom:1px solid rgba(37,42,56,.28);white-space:nowrap;font-family:var(--fn);}
+table.var-pnl td:first-child{text-align:left;position:sticky;left:0;background:var(--bg2);z-index:1;font-family:var(--fs);padding-left:10px;width:155px;min-width:155px;max-width:155px;}
+table.var-pnl tr:hover td{background:rgba(255,255,255,.014);}
+table.var-pnl tr:hover td:first-child{background:rgba(20,24,36,.97);}
+table.var-pnl .vr-sales td{background:rgba(79,140,255,.06)!important;}
+table.var-pnl .vr-sales td:first-child{background:rgba(79,140,255,.1)!important;color:var(--ac);font-weight:600;font-family:var(--fs)!important;}
+table.var-pnl .vr-up td{background:rgba(34,201,122,.04)!important;}
+table.var-pnl .vr-up td:first-child{background:rgba(34,201,122,.07)!important;color:var(--gr);font-weight:600;font-family:var(--fs)!important;}
+table.var-pnl .vr-opdiv td{background:rgba(123,92,240,.04)!important;}
+table.var-pnl .vr-opdiv td:first-child{background:rgba(123,92,240,.07)!important;color:var(--ac2);font-weight:600;font-family:var(--fs)!important;}
+table.var-pnl .vr-bai td{background:rgba(79,140,255,.08)!important;}
+table.var-pnl .vr-bai td:first-child{background:rgba(79,140,255,.12)!important;color:var(--ac);font-weight:600;font-family:var(--fs)!important;}
+table.var-pnl .vr-sub td{border-top:1px solid var(--bdr2);border-bottom:1px solid var(--bdr2)!important;}
+table.var-pnl .vr-sub td:first-child{font-weight:600;font-family:var(--fs)!important;}
+table.var-pnl .vr-sec td:first-child{color:var(--tx2);font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-family:var(--fn)!important;}
+table.var-pnl .vr-grp td:first-child{color:var(--tx2);padding-left:16px!important;}
+table.var-pnl .vr-epi td:first-child{color:var(--tx3);padding-left:28px!important;font-size:10px;}
+table.var-pnl .vr-epi td{font-size:10px;color:var(--tx3);}
+table.var-pnl .cg-sep{border-left:2px solid var(--bdr2)!important;}
+table.var-pnl th.cg-val{color:var(--tx2);}
+table.var-pnl th.cg-dlt{color:var(--ac);font-size:9px;}
+table.var-pnl .td-delta{font-size:10px;}
+table.var-pnl th.pct-s{color:var(--tx3);font-size:9px;}
+table.var-pnl td.pct-s{color:var(--tx3);font-size:10px;}
+table.cts{width:100%;border-collapse:collapse;}
+table.cts th{padding:4px 7px;font-size:10px;font-family:var(--fn);color:var(--tx3);text-align:right;white-space:nowrap;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;}
+table.cts th:first-child{text-align:left;position:sticky;left:0;background:var(--bg);z-index:3;width:180px;min-width:160px;max-width:200px;padding-left:10px;}
+table.cts th.sort-asc::after{content:" ▲";font-size:8px;}
+table.cts th.sort-desc::after{content:" ▼";font-size:8px;}
+table.cts td{padding:3px 7px;font-size:11px;text-align:right;border-bottom:1px solid rgba(37,42,56,.28);white-space:nowrap;font-family:var(--fn);}
+table.cts td:first-child{text-align:left;position:sticky;left:0;background:var(--bg2);z-index:1;font-family:var(--fs);padding-left:10px;font-size:10.5px;width:180px;min-width:160px;max-width:200px;overflow:hidden;}
+table.cts tr:hover td{background:rgba(255,255,255,.016);}
+table.cts tr:hover td:first-child{background:rgba(20,24,36,.97);}
+table.cts .cts-sep{border-left:2px solid var(--bdr2)!important;}
+.ot-zoom-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:100;display:none;align-items:flex-start;justify-content:flex-end;}
+body.light .ot-zoom-overlay{background:rgba(0,0,0,.15);}
+.ot-zoom-overlay.on{display:flex;}
+.ot-zoom-panel{width:min(780px,92vw);height:100vh;background:var(--bg2);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;box-shadow:-8px 0 32px rgba(0,0,0,.18);}
+.ozp-hdr{padding:13px 16px 10px;border-bottom:1px solid var(--bdr);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;gap:10px;}
+.ozp-title{flex:1;min-width:0;}
+.ozp-code{font-size:10px;font-family:var(--fn);color:var(--tx3);margin-bottom:3px;}
+.ozp-name{font-size:13px;font-weight:600;line-height:1.3;color:var(--tx);}
+.ozp-client{font-size:11px;color:var(--tx2);margin-top:2px;}
+.ozp-close{cursor:pointer;font-size:18px;color:var(--tx3);padding:0 4px;line-height:1;flex-shrink:0;}
+.ozp-close:hover{color:var(--tx);}
+.ozp-meta{padding:9px 16px;border-bottom:1px solid var(--bdr);display:flex;gap:18px;flex-wrap:wrap;flex-shrink:0;}
+.ozp-meta-item{display:flex;flex-direction:column;gap:1px;}
+.ozp-meta-label{font-size:9.5px;font-family:var(--fn);color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;}
+.ozp-meta-val{font-size:11.5px;color:var(--tx);font-weight:500;}
+.ozp-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:14px;}
+.ozp-section{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;overflow:hidden;}
+.ozp-sec-title{font-size:10px;font-family:var(--fn);color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;padding:8px 12px 6px;border-bottom:1px solid var(--bdr);}
+.ozp-chart-wrap{padding:10px 12px;}
+.ozp-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr);}
+.ozp-kpi{background:var(--bg2);padding:9px 12px;}
+.ozp-kpi-label{font-size:9.5px;font-family:var(--fn);color:var(--tx3);margin-bottom:3px;}
+.ozp-kpi-val{font-size:15px;font-weight:600;font-family:var(--fn);}
+.ozp-kpi-sub{font-size:10px;color:var(--tx3);margin-top:1px;}
+body.light{--bg:#f5f6fa;--bg2:#ffffff;--bg3:#eef0f5;--bdr:#dde1ec;--bdr2:#c8cedd;--tx:#1a1d2e;--tx2:#4a5068;--tx3:#8890aa;--ac:#2563eb;--ac2:#6d28d9;--gr:#16a34a;--rd:#dc2626;--yl:#ca8a04;}
+body.light table.pnl th,body.light table.pnl td:first-child,body.light table.var-pnl th,body.light table.cts th{background:var(--bg);}
+body.light table.pnl td:first-child,body.light table.var-pnl td:first-child,body.light table.cts td:first-child{background:var(--bg2);}
+body.light .r-sales td:first-child{background:#dce9ff!important;}
+body.light .r-up td:first-child{background:#d1fae5!important;}
+body.light .r-opdiv td:first-child{background:#ede9fe!important;}
+body.light .r-bai td:first-child{background:#dce9ff!important;}
+body.light .r-total td:first-child,body.light .r-sec td:first-child,body.light .r-grp td:first-child{background:#fff!important;}
+.r-cp td{background:rgba(250,200,50,.05)!important;}
+.r-cp td:first-child{background:rgba(250,200,50,.09)!important;color:#e8b84b;font-weight:600;}
+.r-dgbu td{background:rgba(120,100,220,.05)!important;}
+.r-dgbu td:first-child{background:rgba(120,100,220,.09)!important;color:#9b87e0;font-weight:600;}
+.r-dg td{background:rgba(200,100,80,.05)!important;}
+.r-dg td:first-child{background:rgba(200,100,80,.09)!important;color:#d9785a;font-weight:600;}
+.r-dgbu td:nth-child(2){color:var(--rd)!important;}
+.r-dgbu td:nth-child(4){color:var(--rd)!important;}
+.r-dg td:nth-child(2){color:var(--rd)!important;}
+.r-dg td:nth-child(4){color:var(--rd)!important;}
+.r-mfee td:nth-child(2){color:var(--rd)!important;}
+.r-mfee td:nth-child(4){color:var(--rd)!important;}
+.cts-code{font-size:10px;font-family:var(--fn);color:var(--tx3);}
+.cts-name{font-size:11px;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+.cts-bu{font-size:10px;color:var(--tx2);font-family:var(--fn);text-align:center!important;}
+.cts-total td{background:var(--bg3)!important;border-top:2px solid var(--bdr2)!important;border-bottom:2px solid var(--bdr2)!important;}
+.cts-total td:first-child{background:var(--bg3)!important;font-weight:600;font-family:var(--fs)!important;}
+.sort-ind{font-size:9px;color:var(--ac);margin-left:2px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  </style>
+</head>
+<body class="light">
+<div class="shell">
+  <div class="sb">
+    <div class="sb-logo"><h1>OCA Global</h1><p>LATAM · Regional BI</p></div>
+    <nav class="sb-nav">
+      <div class="ni on" onclick="showPage('exec')">◼ &nbsp;Resumen Ejecutivo</div>
+      <div class="ni" onclick="showPage('pnl')">≡ &nbsp;P&amp;L</div>
+      <div class="ni" onclick="showPage('var')">▲ &nbsp;Variaciones</div>
+    </nav>
+    <div class="sb-foot">  Real: Feb 2026<br>Budget: FY 2026<br>v1.2 · <span id="theme-toggle" onclick="toggleTheme()" style="cursor:pointer;color:var(--ac);text-decoration:underline;font-size:10px">● Oscuro</span></div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <h2 id="page-title">Resumen Ejecutivo</h2>
+      <span style="font-size:10px;color:var(--tx3);font-family:var(--fn)" id="topbar-sub">Carregant dades…</span>
+    </div>
+    <div class="fbar">
+      <div class="frow">
+        <div class="fg" id="fg-country">
+          <span class="fl">País</span>
+          <button class="fb on" onclick="setC('ALL',this)">Todos</button>
+          <button class="fb" onclick="setC('CHILE',this)">Chile</button>
+          <button class="fb" onclick="setC('PERU',this)">Perú</button>
+          <button class="fb" onclick="setC('COLOMBIA',this)">Colombia</button>
+          <button class="fb" onclick="setC('MEXICO',this)">México</button>
+          <button class="fb" onclick="setC('BRASIL',this)">Brasil</button>
+          <button class="fb" onclick="setC('PANAMA',this)">Panamá</button>
+        </div>
+        <div class="fsep"></div>
+        <div class="fg" id="fg-bu" style="display:none"></div>
+        <div class="fsep"></div>
+        <div class="fg" id="fg-currency">
+          <span class="fl">Moneda</span>
+          <button class="fb on" id="btn-local" onclick="setCur('local',this)">Local</button>
+          <button class="fb" id="btn-eur" onclick="setCur('eur',this)">EUR k</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="page on" id="page-exec">
+        <div id="exec-content" style="flex:1;overflow-y:auto;"></div>
+      </div>
+      <div class="page" id="page-pnl">
+        <div class="pnl-wrap">
+          <div class="ot-panel hidden" id="ot-panel">
+            <div class="ot-hdr"><span>Contratos</span><span id="ot-count" style="font-size:10px;color:var(--tx3)"></span></div>
+            <div class="ot-search"><input type="text" id="ot-search" placeholder="Buscar…" oninput="filterOTs()"></div>
+            <div class="ot-total on" id="ot-all-btn" onclick="selectOT('ALL')">▣ &nbsp;Total</div>
+            <div class="ot-list" id="ot-list"></div>
+          </div>
+          <div class="pnl-area">
+            <div class="tabs">
+              <div class="tab on" onclick="setPnlTab('analysis',this)">Análisis P&amp;L</div>
+              <div class="tab" onclick="setPnlTab('evol',this)">Evolutivo Mensual</div>
+            </div>
+            <div class="tab-content on" id="tab-analysis">
+              <div class="tbox">
+                <div class="tbox-hdr">
+                  <div style="display:flex;align-items:center;gap:7px;">
+                    <div class="tbox-title" id="pnl-scope">LATAM</div>
+                    <div class="tbox-cur" id="pnl-cur-lbl">EUR k</div>
+                  </div>
+                  <div class="tbox-ctrls">
+                    <span style="font-size:10px;color:var(--tx3)">Comp:</span>
+                    <button class="rb on" id="cmp-b-btn" onclick="setCmp('B',this)">vs Budget</button>
+                    <button class="rb" id="cmp-ly-btn" onclick="setCmp('LY',this)">vs LY</button>
+                    <button class="rb" id="cmp-lm-btn" onclick="setCmp('LM',this)">vs LM</button>
+                    <div class="fsep"></div>
+                    <button class="rb" onclick="toggleAllExp(this)">Expandir todo</button>
+                  </div>
+                </div>
+                <div class="month-grid" id="month-grid"></div>
+                <div class="tw"><table class="pnl" id="tbl-analysis"></table></div>
+              </div>
+            </div>
+            <div class="tab-content" id="tab-evol">
+              <div id="evol-chart-wrap" class="chart-box" style="display:none;">
+                <div class="chart-hdr">
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <div class="chart-title" id="chart-title">Evolución mensual</div>
+                    <div class="tbox-cur" id="evol-chart-cur-lbl" style="font-size:10px">EUR k</div>
+                  </div>
+                  <div style="display:flex;gap:3px;flex-wrap:wrap;align-items:center;">
+                    <button class="rb on" id="cm-Sales" onclick="setChartM('Sales',this)">Sales</button>
+                    <button class="rb" id="cm-UP" onclick="setChartM('UP',this)">UP</button>
+                    <button class="rb" id="cm-UPpct" onclick="setChartM('UPpct',this)">UP%</button>
+                    <button class="rb" id="cm-OP_DIV" onclick="setChartM('OP_DIV',this)">OP</button>
+                    <button class="rb" id="cm-OPpct" onclick="setChartM('OPpct',this)">OP%</button>
+                    <button class="rb" id="cm-DG_total" onclick="setChartM('DG_total',this)">DG País</button>
+                    <button class="rb" id="cm-DGpct" onclick="setChartM('DGpct',this)">DG País%</button>
+                    <button class="rb" id="cm-BAI" onclick="setChartM('BAI',this)">BAI</button>
+                    <button class="rb" id="cm-BAIpct" onclick="setChartM('BAIpct',this)">BAI%</button>
+                    <div class="fsep"></div>
+                    <button class="rb on" onclick="togCY(2025,this)">2025</button>
+                    <button class="rb on" onclick="togCY(2026,this)">2026</button>
+                    <div class="fsep"></div>
+                    <button class="rb" onclick="setEvolView('table',null)">← Tabla</button>
+                  </div>
+                </div>
+                <canvas id="evol-chart" height="110"></canvas>
+              </div>
+              <div class="tbox" id="evol-tbox" style="flex:1;">
+                <div class="tbox-hdr">
+                  <div style="display:flex;align-items:center;gap:7px;">
+                    <div class="tbox-title">P&L Evolutivo</div>
+                    <div class="tbox-cur" id="evol-cur-lbl">EUR k</div>
+                  </div>
+                  <div class="tbox-ctrls">
+                    <button class="rb on" onclick="setEV('monthly',this)">Mensual</button>
+                    <button class="rb" onclick="setEV('ytd',this)">YTD</button>
+                    <div class="fsep"></div>
+                    <button class="rb on ev-yr" id="ev-btn-25R" onclick="togEvolYear('25R',this)">25R</button>
+                    <button class="rb on ev-yr" id="ev-btn-26R" onclick="togEvolYear('26R',this)">26R</button>
+                    <button class="rb on ev-yr" id="ev-btn-26B" onclick="togEvolYear('26B',this)">26B</button>
+                    <div class="fsep"></div>
+                    <button class="rb" id="evol-exp-btn" onclick="togEvolExp(this)">Colapsar todo</button>
+                    <div class="fsep"></div>
+                    <button class="rb" onclick="setEvolView('chart',null)">Gráfica →</button>
+                  </div>
+                </div>
+                <div class="tw" id="tw-evol"><table class="pnl" id="tbl-evol"></table></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page" id="page-var">
+        <div class="var-wrap">
+          <div class="tabs var-tabs">
+            <div class="tab on" onclick="setVarTab('analysis',this)">Análisis Variaciones</div>
+            <div class="tab" onclick="setVarTab('contracts',this)">Análisis Contratos</div>
+            <div class="tab" onclick="setVarTab('scatter',this)">Scatter</div>
+            <div class="tab" onclick="setVarTab('topbot',this)">Top / Bottom</div>
+          </div>
+          <div class="var-tab-content on" id="vtab-analysis">
+            <div class="tbox" style="flex:1;min-height:0;">
+              <div class="tbox-hdr">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div class="tbox-title" id="var-scope-lbl">LATAM · Todos los países</div>
+                  <div class="tbox-cur" id="var-cur-lbl">EUR k</div>
+                </div>
+                <div class="tbox-ctrls">
+                  <span class="fl">Scope</span>
+                  <button class="rb on" id="var-scope-m" onclick="setVarScope('month',this)">Mes</button>
+                  <button class="rb" id="var-scope-ytd" onclick="setVarScope('ytd',this)">YTD</button>
+                  <button class="rb" id="var-scope-fy" onclick="setVarScope('fy',this)">FY</button>
+                  <div class="fsep"></div>
+                  <span class="fl">vs</span>
+                  <button class="rb on" id="var-cmp-b" onclick="setVarCmp('B',this)">Budget</button>
+                  <button class="rb" id="var-cmp-ly" onclick="setVarCmp('LY',this)">LY</button>
+                  <button class="rb" id="var-cmp-lm" onclick="setVarCmp('LM',this)">LM</button>
+                  <div class="fsep"></div>
+                  <button class="rb" onclick="toggleVarExp(this)">Expandir todo</button>
+                </div>
+              </div>
+              <div class="month-grid" id="var-month-grid"></div>
+              <div class="tw"><table class="var-pnl" id="tbl-var"></table></div>
+            </div>
+          </div>
+          <div class="var-tab-content" id="vtab-contracts">
+            <div class="tbox" style="flex:1;min-height:0;">
+              <div class="tbox-hdr">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div class="tbox-title" id="cts-scope-lbl">Contratos</div>
+                  <div class="tbox-cur" id="cts-cur-lbl">EUR k</div>
+                </div>
+                <div class="tbox-ctrls">
+                  <span class="fl">Scope</span>
+                  <button class="rb on" id="cts-scope-m" onclick="setCtsScope('month',this)">Mes</button>
+                  <button class="rb" id="cts-scope-ytd" onclick="setCtsScope('ytd',this)">YTD</button>
+                  <button class="rb" id="cts-scope-fy" onclick="setCtsScope('fy',this)">FY</button>
+                  <div class="fsep"></div>
+                  <span class="fl">vs</span>
+                  <button class="rb on" id="cts-cmp-b" onclick="setCtsCmp('B',this)">Budget</button>
+                  <button class="rb" id="cts-cmp-ly" onclick="setCtsCmp('LY',this)">LY</button>
+                  <button class="rb" id="cts-cmp-lm" onclick="setCtsCmp('LM',this)">LM</button>
+                  <div class="fsep"></div>
+                  <span class="fl">Mostrar</span>
+                  <button class="rb on" id="cts-n-20" onclick="setCtsN(20,this)">Top 20</button>
+                  <button class="rb" id="cts-n-50" onclick="setCtsN(50,this)">Top 50</button>
+                  <button class="rb" id="cts-n-0" onclick="setCtsN(0,this)">Todos</button>
+                </div>
+              </div>
+              <div class="month-grid" id="cts-month-grid"></div>
+              <div class="tw"><table class="cts" id="tbl-cts"></table></div>
+            </div>
+          </div>
+          <div class="var-tab-content" id="vtab-scatter">
+            <div class="tbox" style="flex:1;min-height:0;">
+              <div class="tbox-hdr">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div class="tbox-title">Scatter · Sales vs UP%</div>
+                  <div class="tbox-cur" id="sc-cur-lbl">EUR k</div>
+                </div>
+                <div class="tbox-ctrls">
+                  <span class="fl">Scope</span>
+                  <button class="rb on" id="sc-scope-m" onclick="setScScope('month',this)">Mes</button>
+                  <button class="rb" id="sc-scope-ytd" onclick="setScScope('ytd',this)">YTD</button>
+                  <button class="rb" id="sc-scope-fy" onclick="setScScope('fy',this)">FY</button>
+                  <div class="fsep"></div>
+                  <span class="fl">Mínimo Sales</span>
+                  <button class="rb on" id="sc-min-0" onclick="setScMin(0,this)">Todos</button>
+                  <button class="rb" id="sc-min-10" onclick="setScMin(10,this)">&gt;10k</button>
+                  <button class="rb" id="sc-min-50" onclick="setScMin(50,this)">&gt;50k</button>
+                  <button class="rb" id="sc-min-100" onclick="setScMin(100,this)">&gt;100k</button>
+                </div>
+              </div>
+              <div class="month-grid" id="sc-month-grid"></div>
+              <div style="flex:1;min-height:0;display:flex;gap:11px;padding:8px 0 0;">
+                <div style="flex:1;min-width:0;position:relative;"><canvas id="sc-chart"></canvas></div>
+                <div style="width:200px;flex-shrink:0;overflow-y:auto;" id="sc-legend"></div>
+              </div>
+            </div>
+          </div>
+          <div class="var-tab-content" id="vtab-topbot">
+            <div class="tbox" style="flex:1;min-height:0;">
+              <div class="tbox-hdr">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div class="tbox-title">Top / Bottom Movers</div>
+                  <div class="tbox-cur" id="tb-cur-lbl">EUR k</div>
+                </div>
+                <div class="tbox-ctrls">
+                  <span class="fl">Scope</span>
+                  <button class="rb on" id="tb-scope-m" onclick="setTbScope('month',this)">Mes</button>
+                  <button class="rb" id="tb-scope-ytd" onclick="setTbScope('ytd',this)">YTD</button>
+                  <button class="rb" id="tb-scope-fy" onclick="setTbScope('fy',this)">FY</button>
+                  <div class="fsep"></div>
+                  <span class="fl">vs</span>
+                  <button class="rb on" id="tb-cmp-b" onclick="setTbCmp('B',this)">Budget</button>
+                  <button class="rb" id="tb-cmp-ly" onclick="setTbCmp('LY',this)">LY</button>
+                  <button class="rb" id="tb-cmp-lm" onclick="setTbCmp('LM',this)">LM</button>
+                  <div class="fsep"></div>
+                  <span class="fl">Métrica</span>
+                  <button class="rb on" id="tb-met-sales" onclick="setTbMet('sales',this)">Δ Sales</button>
+                  <button class="rb" id="tb-met-up" onclick="setTbMet('up',this)">Δ UP</button>
+                  <button class="rb" id="tb-met-upPct" onclick="setTbMet('upPct',this)">Δ UP%</button>
+                  <div class="fsep"></div>
+                  <span class="fl">N</span>
+                  <button class="rb on" id="tb-n-10" onclick="setTbN(10,this)">10</button>
+                  <button class="rb" id="tb-n-20" onclick="setTbN(20,this)">20</button>
+                </div>
+              </div>
+              <div class="month-grid" id="tb-month-grid"></div>
+              <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:8px 0 0;overflow:hidden;">
+                <div style="display:flex;flex-direction:column;min-height:0;">
+                  <div style="font-size:11px;font-weight:600;color:var(--gr);margin-bottom:6px;padding-left:4px;">▲ Top mejores</div>
+                  <div class="tw" style="flex:1;overflow-y:auto;"><table class="cts" id="tbl-top"></table></div>
+                </div>
+                <div style="display:flex;flex-direction:column;min-height:0;">
+                  <div style="font-size:11px;font-weight:600;color:var(--rd);margin-bottom:6px;padding-left:4px;">▼ Top peores</div>
+                  <div class="tw" style="flex:1;overflow-y:auto;"><table class="cts" id="tbl-bot"></table></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OT ZOOM PANEL -->
+<div class="ot-zoom-overlay" id="ot-zoom-overlay" onclick="closeOtZoom(event)">
+  <div class="ot-zoom-panel" id="ot-zoom-panel">
+    <div class="ozp-hdr">
+      <div class="ozp-title">
+        <div class="ozp-code" id="ozp-code"></div>
+        <div class="ozp-name" id="ozp-name"></div>
+        <div class="ozp-client" id="ozp-client"></div>
+      </div>
+      <span class="ozp-close" onclick="closeOtZoom(null)">✕</span>
+    </div>
+    <div class="ozp-meta" id="ozp-meta"></div>
+    <div class="ozp-body" id="ozp-body"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA LOADER ─────────────────────────────────────────────────────────────
+const API_URL = 'https://script.google.com/macros/s/AKfycbzUGFEGL-7iI7AZ7HPEk4UEc0_32sywrp76kqgQZp7QeUDSDgzw12L-2jH3HknQumWR/exec';
+
+let EPI_DATA = {};
+let FX_RATES = {};
+let OT_DATA  = {};
+let OT_META  = {};
+let META     = { ot_index: {}, bus: {} };
+
+async function fetchSheet(sheetName) {
+  const url = `${API_URL}?sheet=${encodeURIComponent(sheetName)}`;
+  const res  = await fetch(url);
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json.rows || [];
+}
+
+function showLoader(msg) {
+  let el = document.getElementById('oca-loader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'oca-loader';
+    el.style.cssText = 'position:fixed;inset:0;background:var(--bg,#0d0f14);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;font-family:\'DM Mono\',monospace;color:#4f8cff;gap:14px;';
+    el.innerHTML = '<div style="font-size:15px;font-weight:500">OCA LATAM · BI Dashboard</div><div id="oca-loader-msg" style="font-size:12px;color:#8b91a8"></div><div style="width:220px;height:3px;background:#1a1e28;border-radius:2px;overflow:hidden"><div id="oca-loader-bar" style="height:100%;background:#4f8cff;width:0%;transition:width .4s ease;border-radius:2px"></div></div>';
+    document.body.appendChild(el);
+  }
+  document.getElementById('oca-loader-msg').textContent = msg;
+}
+function setLoaderProgress(pct) { const b=document.getElementById('oca-loader-bar'); if(b) b.style.width=pct+'%'; }
+function hideLoader() { const el=document.getElementById('oca-loader'); if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),350);} }
+
+async function loadData() {
+  showLoader('Connectant amb Google Sheets…');
+  try {
+    showLoader('Carregant configuració…'); setLoaderProgress(10);
+    try {
+      const divRows = await fetchSheet('Divisiones');
+      for (const r of divRows) {
+        if (!r['Country']||!r['BU']||!r['BU_ShortName']) continue;
+        BU_SHORT[r['Country']+':'+r['BU']] = r['BU_ShortName'];
+        BU_SHORT['ALL:'+r['BU']] = r['BU_ShortName'];
+      }
+    } catch(e) { console.warn('No es pot carregar Divisiones:', e); }
+
+    // Carregar Forex del CONFIG sheet
+    try {
+      const fxRows = await fetchSheet('Forex');
+      FX_RATES = {};
+      for (const r of fxRows) {
+        const country = r['Country'], rt = r['Report type']==='Real'?'R':'B';
+        const year = parseInt(r['Year']), month = parseInt(r['Month']);
+        const fx = parseFloat(r['Fx_to_EUR']);
+        if (!country||!year||!month||isNaN(fx)) continue;
+        if (!FX_RATES[country]) FX_RATES[country]={};
+        if (!FX_RATES[country][rt]) FX_RATES[country][rt]={};
+        if (!FX_RATES[country][rt][year]) FX_RATES[country][rt][year]={};
+        FX_RATES[country][rt][year][month]=fx;
+      }
+    } catch(e) {
+      console.warn('No es pot carregar Forex, usant valors per defecte:', e);
+      const defaults={CHILE:0.000001,PERU:0.00025,COLOMBIA:0.00000022,MEXICO:0.05,BRASIL:0.18,PANAMA:1};
+      for (const [country,fx] of Object.entries(defaults)) {
+        FX_RATES[country]={R:{},B:{}};
+        for (const yr of [2025,2026]) { FX_RATES[country].R[yr]={}; FX_RATES[country].B[yr]={}; for (let m=1;m<=12;m++) { FX_RATES[country].R[yr][m]=fx; FX_RATES[country].B[yr][m]=fx; } }
+      }
+    }
+
+    showLoader('Carregant mapes de centres de benefici…'); setLoaderProgress(15);
+    const cebeRows = await fetchSheet('Map_CeBe_MASTER');
+    const cebeMap = {};
+    for (const r of cebeRows) {
+      const country = r['Country'];
+      if (!country) continue;
+      if (r['VERSION'] !== 'NEW' && r['Versión'] !== 'NEW' && r['Versió'] !== 'NEW' && r['Version'] !== 'NEW') continue;
+      if (!cebeMap[country]) cebeMap[country] = {};
+      cebeMap[country][r['CeBe']] = { bu: r['BU']||'', type: r['CeBe_Type']||'PROD', bl: r['BL']||'' };
+    }
+
+    showLoader('Carregant mapes de contractes…'); setLoaderProgress(35);
+    const otRows = await fetchSheet('Map_OT_MASTER');
+    const otMap = {};
+    for (const r of otRows) {
+      const country = r['Country'];
+      if (!country) continue;
+      if (!otMap[country]) otMap[country] = {};
+      META.ot_index[country] = META.ot_index[country] || {};
+      META.bus[country]      = META.bus[country]      || [];
+      const idGL   = r['ID-GL'];
+      const otCode = r['OT Code'] || r['OT SAP'] || idGL;
+      const bu     = r['BU'] || '';
+      if (!idGL) continue;
+      otMap[country][idGL] = { otCode, bu, codeType: r['CodeType']||'PROD' };
+      if (!META.ot_index[country][otCode])
+        META.ot_index[country][otCode] = { n: r['OT Name']||otCode, b: bu, c: r['OT Client']||'' };
+      const key = `${country}|${otCode}`;
+      if (!OT_META[key]) OT_META[key] = { name: r['OT Name']||otCode, client: r['OT Client']||'', bu, status: r['OT Status']||'', type: r['OT Type']||'', valor: r['OT Budget']?String(r['OT Budget']):'TBD' };
+      if (bu) { if (!META.bus[country].includes(bu)) META.bus[country].push(bu); }
+    }
+
+    const pnlMap = buildDefaultPnlMap();
+
+    showLoader('Carregant base de dades financera…'); setLoaderProgress(50);
+    const dbRows = await fetchSheet('DB_MASTER');
+    setLoaderProgress(70);
+    showLoader('Processant dades…');
+    buildEpiData(dbRows, cebeMap, otMap, pnlMap);
+    setLoaderProgress(95);
+
+    showLoader('Inicialitzant dashboard…');
+    hideLoader();
+    initDashboard();
+  } catch(err) {
+    console.error('Error carregant dades:', err);
+    showLoader('❌ Error carregant dades. Comprova que els Sheets són públics.');
+    document.getElementById('oca-loader-msg').style.color='#ff4d6a';
+  }
+}
+
+// FX des del Map_CeBe si té columnes FX, sinó valors per defecte
+function buildFxRatesFromCebe(cebeRows) {
+  FX_RATES = {};
+  // Intentar llegir columnes FX si existeixen al Map_CeBe_MASTER
+  let hasFx = false;
+  for (const r of cebeRows) {
+    if (r['Fx_to_EUR'] !== undefined && r['Fx_to_EUR'] !== null) { hasFx = true; break; }
+  }
+  if (hasFx) {
+    for (const r of cebeRows) {
+      if (!r['Country'] || !r['Fx_to_EUR']) continue;
+      const country=r['Country'], rt=r['Report type']==='Real'?'R':'B';
+      const year=parseInt(r['Year']), month=parseInt(r['Month']), fx=parseFloat(r['Fx_to_EUR']);
+      if (!FX_RATES[country]) FX_RATES[country]={};
+      if (!FX_RATES[country][rt]) FX_RATES[country][rt]={};
+      if (!FX_RATES[country][rt][year]) FX_RATES[country][rt][year]={};
+      FX_RATES[country][rt][year][month]=fx;
+    }
+  } else {
+    // Valors FX per defecte (aproximats) si no hi ha dades
+    const defaults = {CHILE:0.000001,PERU:0.00025,COLOMBIA:0.00000022,MEXICO:0.05,BRASIL:0.18,PANAMA:1};
+    for (const [country, fx] of Object.entries(defaults)) {
+      FX_RATES[country]={R:{},B:{}};
+      for (const yr of [2025,2026]) {
+        FX_RATES[country].R[yr]={};
+        FX_RATES[country].B[yr]={};
+        for (let m=1;m<=12;m++) { FX_RATES[country].R[yr][m]=fx; FX_RATES[country].B[yr][m]=fx; }
+      }
+    }
+  }
+}
+
+// Mapa P&L per defecte basat en l'estructura coneguda
+function buildDefaultPnlMap() {
+  const map = {};
+  // Sales: sign -1 (els valors de vendes arriben negatius al GL, invertim)
+  for (const e of [1011,1012,1013]) map[String(e)]={sign:-1,pnl1:'Sales',pnl2:'',type:'PROD'};
+  // Costs: sign -1 (els costos vénen positius al GL, cal invertir)
+  const costEpis=[2011,2012,2021,2022,203,2041,2042,2043,2044,205,
+    3011,3012,3013,302,303,3041,3042,3043,3044,3051,3052,306,307,308,
+    4011,4012,4013,4014,4015,4016,4017,402,403,404,405,
+    4061,4062,4063,4064,4065,4066,4067,4081,4082,4083,4091,4092,410,411,
+    407,501,502,601,602,603,701,702];
+  for (const e of costEpis) map[String(e)]={sign:-1,pnl1:'Cost',pnl2:'',type:'PROD'};
+  return map;
+}
+
+function buildEpiData(dbRows, cebeMap, otMap, pnlMap) {
+  EPI_DATA={}; OT_DATA={};
+  const EXCLUDED_EPI=new Set([103,206]);
+  for (const r of dbRows) {
+    const country=r['Country'], rtype=r['Report type']==='Real'?'R':'B';
+    const year=parseInt(r['Year']), month=parseInt(r['Month']);
+    const idGL=r['ID-GL'], cebe=r['CeBe'];
+    const epi=parseInt(r['Epigraph']), balLocal=parseFloat(r['Balance (Local)'])||0;
+    if (!country||!year||!month||!cebe||!epi||balLocal===0) continue;
+    if (EXCLUDED_EPI.has(epi)) continue;
+    const pnlInfo=pnlMap[String(epi)]||{};
+    const sign=pnlInfo.sign??1, value=balLocal*sign;
+    const pnl1=pnlInfo.pnl1||'';
+    if (pnl1==='Sundries Cost'||pnl1==='Sundries Revenue') continue;
+    const cebeInfo=cebeMap[country]?.[cebe]||{};
+    const cebeType=cebeInfo.type||'PROD';
+    // Fallback BU: si cebeMap no té BU, intentar via otMap (Map_OT_MASTER)
+    const bu=cebeInfo.bu||otMap[country]?.[idGL]?.bu||'UNKNOWN';
+    const period=`${year}_${rtype}_M${month}`;
+    if (!EPI_DATA[country]) EPI_DATA[country]={};
+    if (!EPI_DATA[country][period]) EPI_DATA[country][period]={};
+    if (!EPI_DATA[country][period]['ALL']) EPI_DATA[country][period]['ALL']={};
+    if (!EPI_DATA[country][period][bu]) EPI_DATA[country][period][bu]={};
+    const typePrefix=cebeType==='DG BU'?'DG BU':cebeType==='DG'?'DG':'PROD';
+    const key=`${typePrefix}:${epi}`;
+    EPI_DATA[country][period]['ALL'][key]=(EPI_DATA[country][period]['ALL'][key]||0)+value;
+    EPI_DATA[country][period][bu][key]   =(EPI_DATA[country][period][bu][key]   ||0)+value;
+    if (cebeType==='PROD') {
+      const otInfo=otMap[country]?.[idGL], otCode=otInfo?.otCode;
+      if (!otCode||otInfo?.codeType==='ZNA') continue;
+      if (!OT_DATA[country]) OT_DATA[country]={};
+      if (!OT_DATA[country][period]) OT_DATA[country][period]={};
+      if (!OT_DATA[country][period][otCode]) OT_DATA[country][period][otCode]={};
+      OT_DATA[country][period][otCode][epi]=(OT_DATA[country][period][otCode][epi]||0)+value;
+    }
+  }
+}
+
+// ── CONSTANTS ────────────────────────────────────────────────────────────────
+const MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const CURRENCIES={CHILE:'CLP M',PERU:'PEN k',COLOMBIA:'COP M',MEXICO:'MXN k',BRASIL:'BRL k',PANAMA:'USD k'};
+const COUNTRIES=['CHILE','PERU','COLOMBIA','MEXICO','BRASIL','PANAMA'];
+const SECTIONS_ORDER=['Staff','Operating Costs','General Expenses','DA','Financial Result','Extraordinary'];
+const SECTION_LABELS={'Staff':'Staff','Operating Costs':'Operating Costs','General Expenses':'General Expenses','DA':'D&A','Financial Result':'Financial Result','Extraordinary':'Extraordinary'};
+const FLAT_SECTIONS=new Set(['DA','Financial Result','Extraordinary']);
+const GROUPS_ORDER={
+  'Staff':['Salaries','Social Security','Indemnifications','Travel','Living Expenses','Training','Health & Safety','Mgmt Reinvoicing'],
+  'Operating Costs':['Commercial costs','Production Costs','Administrative Fees','Equipment','Consumables'],
+  'General Expenses':['Offices','Other Office Costs','IT','Marketing & PR','Postal & Courier','Prof. Services','Other General Exp','Taxes','Insurance Premiums','Banking Commissions'],
+  'DA':[501,502],
+  'Financial Result':[601,602,603],
+  'Extraordinary':[701,702],
+};
+const EPI_ORDER={
+  'Salaries':[3011,3012,3013],'Social Security':[302],'Indemnifications':[303],
+  'Travel':[3041,3042,3043,3044],'Living Expenses':[3051,3052],
+  'Training':[306],'Health & Safety':[307],'Mgmt Reinvoicing':[308],
+  'Commercial costs':[2011,2012],'Production Costs':[2021,2022],
+  'Administrative Fees':[203],'Equipment':[2041,2042,2043,2044],'Consumables':[205],
+  'Offices':[4011,4012,4013,4014,4015,4016,4017],
+  'Other Office Costs':[402],'IT':[403],'Marketing & PR':[404],'Postal & Courier':[405],
+  'Prof. Services':[4061,4062,4063,4064,4065,4066,4067],
+  'Other General Exp':[4081,4082,4083],'Taxes':[4091,4092],
+  'Insurance Premiums':[410],'Banking Commissions':[411],
+};
+const EPI_LABELS={
+  1011:'Real Sales',1012:'Work in Progress',1013:'Other Incomes',
+  2011:'Sales commissions',2012:'Commercial campaigns',2021:'Freelances',2022:'Works done by other co.',
+  203:'Administrative Fees',2041:'Working Equip. Amort.',2042:'Equipment reloading',
+  2043:'Small value equipment',2044:'Equip. repair & calib.',205:'Consumables',
+  3011:'Fixed salaries',3012:'Incentives',3013:'Temp. work agencies',
+  302:'Social Security',303:'Indemnifications',
+  3041:'Kilometres',3042:'Gasoline',3043:'Vehicle Renting',3044:'Travel & Accommodation',
+  3051:'Employee reimb. costs',3052:'Per Diems',
+  306:'Training',307:'Health & Safety',308:'Mgmt Costs Reinvoicing',
+  4011:'Office renting',4012:'Facilities maint.',4013:'Office supplies',4014:'Utility supplies',
+  4015:'Communications',4016:'Office small value',4017:'Office equip. amort.',
+  402:'Other Office Costs',403:'IT',404:'Marketing & PR',405:'Postal & Courier',
+  4061:'Accounting audit',4062:'Quality & audits',4063:'Accreditation fees',4064:'Legal expenses',
+  4065:'People & Talent',4066:'Accounting & fin.',4067:'Document storage',
+  4081:'Credit cards',4082:'Other small value',4083:'Other mgmt expenses',
+  4091:'Local taxes',4092:'Other taxes',410:'Insurance Premiums',411:'Banking Commissions',
+  407:'Management Fee',501:'Amortizations',502:'Depreciations',
+  601:'Financial Incomes',602:'Group Fin. Inc/Exp',603:'Financial Expenses',
+  701:'Extraordinary incomes',702:'Extraordinary expenses',
+};
+const EPI_LABELSC={
+  3011:'Staff',3012:'Staff',3013:'Staff',302:'Staff',303:'Staff',
+  3041:'Staff',3042:'Staff',3043:'Staff',3044:'Staff',3051:'Staff',3052:'Staff',306:'Staff',307:'Staff',308:'Staff',
+  2011:'Operating Costs',2012:'Operating Costs',2021:'Operating Costs',2022:'Operating Costs',
+  203:'Operating Costs',2041:'Operating Costs',2042:'Operating Costs',2043:'Operating Costs',2044:'Operating Costs',205:'Operating Costs',
+  4011:'General Expenses',4012:'General Expenses',4013:'General Expenses',4014:'General Expenses',
+  4015:'General Expenses',4016:'General Expenses',4017:'General Expenses',
+  402:'General Expenses',403:'General Expenses',404:'General Expenses',405:'General Expenses',
+  4061:'General Expenses',4062:'General Expenses',4063:'General Expenses',4064:'General Expenses',
+  4065:'General Expenses',4066:'General Expenses',4067:'General Expenses',
+  4081:'General Expenses',4082:'General Expenses',4083:'General Expenses',
+  4091:'General Expenses',4092:'General Expenses',410:'General Expenses',411:'General Expenses',
+  501:'DA',502:'DA',601:'Financial Result',602:'Financial Result',603:'Financial Result',
+  701:'Extraordinary',702:'Extraordinary',
+};
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+const ST={
+  country:'ALL', bu:'ALL', ot:'ALL',
+  pnlTab:'analysis',
+  selMonths:new Set([2]),
+  pnlScope:'month',
+  cmp:'B',
+  evolMode:'monthly', evolYears:new Set(['25R','26R','26B']),
+  chartMetric:'Sales', chartYears:{2025:true,2026:true},
+  currency:'eur',
+  evolExp:false,
+  varTab:'analysis',
+  varScope:'month', varCmp:'B', varSelMonths:new Set([2]),
+  varExp:{}, varExpAll:false,
+  ctsScope:'month', ctsCmp:'B', ctsSelMonths:new Set([2]),
+  ctsSort:{col:'salesR',dir:'desc'}, ctsN:20,
+  scScope:'month', scSelMonths:new Set([2]), scMin:0, scShowOutliers:false,
+  tbScope:'month', tbCmp:'B', tbSelMonths:new Set([2]), tbMet:'sales', tbN:10,
+};
+let EXP={};
+let allExpanded=false;
+let chart=null;
+const BU_COLORS={
+  'ST':'rgba(37,99,235,.8)','IND':'rgba(22,163,74,.8)','IA':'rgba(109,40,217,.8)',
+  'CMA':'rgba(202,138,4,.8)','EHS':'rgba(234,88,12,.8)','II':'rgba(20,184,166,.8)',
+  'HS':'rgba(219,39,119,.8)','IE':'rgba(99,102,241,.8)','OV':'rgba(100,116,139,.8)',
+  'CIA':'rgba(239,68,68,.8)','SC':'rgba(156,163,175,.8)','OTH':'rgba(156,163,175,.7)'
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function getDivisor(country) {
+  // Chile i Colombia: moneda local en milions (divisor 1.000.000)
+  // Resta: en milers (divisor 1.000)
+  return (country==='CHILE'||country==='COLOMBIA') ? 1000000 : 1000;
+}
+function getFx(country, rt, year, month) {
+  return FX_RATES?.[country]?.[rt]?.[year]?.[month] ?? 1;
+}
+// toEurScale definida més avall (versió canònica)
+function fmt(v, dec=0) {
+  if (v===null||v===undefined||isNaN(v)) return '—';
+  const neg=v<0, abs=Math.abs(v);
+  const s=abs.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec>0?dec:1});
+  return neg?'('+s+')':s;
+}
+function fmtN(v, dec=1) {
+  if (v===null||v===undefined||isNaN(v)) return '—';
+  const neg=v<0, abs=Math.abs(v);
+  const s=abs.toLocaleString('de-DE',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  return neg?'('+s+')':s;
+}
+function fmtPct(v) {
+  if (v===null||v===undefined||isNaN(v)||!isFinite(v)) return '—';
+  return (v>=0?'+':'')+v.toFixed(1)+'%';
+}
+function ragClass(v, inverted=false) {
+  if (v===null||isNaN(v)) return '';
+  const good = inverted ? v<=-5 : v>=5;
+  const bad  = inverted ? v>=5  : v<=-5;
+  return good?'g':bad?'r':'y';
+}
+
+// ── PERIOD HELPERS ────────────────────────────────────────────────────────────
+function parsePeriod(p) {
+  const m=p.match(/^(\d+)_([RB])_M(\d+)$/);
+  return m?{year:+m[1],rt:m[2],month:+m[3]}:null;
+}
+function periodKey(year,rt,month){return `${year}_${rt}_M${month}`;}
+function allPeriods(){return Object.values(EPI_DATA).flatMap(d=>Object.keys(d));}
+function availableYears(){return [...new Set(allPeriods().map(p=>parsePeriod(p)?.year).filter(Boolean))].sort();}
+function maxRealMonth(year){
+  const ms=allPeriods().map(p=>parsePeriod(p)).filter(p=>p&&p.rt==='R'&&p.year===year).map(p=>p.month);
+  return ms.length?Math.max(...ms):0;
+}
+
+// Get periods for a scope (month/ytd/fy) and a base month/year
+function getScopePeriods(scope, selMonths, year, rt) {
+  if (scope==='month') return [...selMonths].map(m=>periodKey(year,rt,m));
+  if (scope==='ytd') {
+    const maxM=Math.max(...selMonths);
+    return Array.from({length:maxM},(_,i)=>periodKey(year,rt,i+1));
+  }
+  return Array.from({length:12},(_,i)=>periodKey(year,rt,i+1));
+}
+
+// ── DATA ACCESSORS ────────────────────────────────────────────────────────────
+function getCountries() {
+  return ST.country==='ALL' ? COUNTRIES : [ST.country];
+}
+function getEpiVal(country, periods, bu, key) {
+  let sum=0;
+  for (const p of periods) sum+=(EPI_DATA?.[country]?.[p]?.[bu]?.[key]||0);
+  return sum;
+}
+function getSalesEpis() { return [1011,1012,1013]; }
+function getCostProdKeys() {
+  const keys=[];
+  for (const sec of ['Staff','Operating Costs','General Expenses','DA','Financial Result','Extraordinary']) {
+    if (FLAT_SECTIONS.has(sec)) { for (const e of GROUPS_ORDER[sec]) keys.push(`PROD:${e}`); }
+    else { for (const grp of GROUPS_ORDER[sec]) for (const e of (EPI_ORDER[grp]||[])) keys.push(`PROD:${e}`); }
+  }
+  return keys;
+}
+function getDGBUKeys() {
+  const keys=[];
+  for (const sec of SECTIONS_ORDER) {
+    if (FLAT_SECTIONS.has(sec)) { for (const e of GROUPS_ORDER[sec]) keys.push(`DG BU:${e}`); }
+    else { for (const grp of (GROUPS_ORDER[sec]||[])) for (const e of (EPI_ORDER[grp]||[])) keys.push(`DG BU:${e}`); }
+  }
+  keys.push('DG BU:407');
+  return keys;
+}
+function getDGKeys() {
+  const keys=[];
+  for (const sec of SECTIONS_ORDER) {
+    if (FLAT_SECTIONS.has(sec)) { for (const e of GROUPS_ORDER[sec]) keys.push(`DG:${e}`); }
+    else { for (const grp of (GROUPS_ORDER[sec]||[])) for (const e of (EPI_ORDER[grp]||[])) keys.push(`DG:${e}`); }
+  }
+  return keys;
+}
+
+function calcPnL(country, periods, bu) {
+  const buKey = bu||'ALL';
+  let sales=0, costProd=0, dgBu=0, dg=0, mfee=0;
+  for (const epi of getSalesEpis()) sales+=getEpiVal(country,periods,buKey,`PROD:${epi}`);
+  // DG type also contributes to sales (vendes DG)
+  for (const epi of getSalesEpis()) sales+=getEpiVal(country,periods,buKey,`DG:${epi}`);
+  for (const k of getCostProdKeys()) costProd+=getEpiVal(country,periods,buKey,k);
+  for (const k of getDGBUKeys()) { if (!k.includes(':407')) dgBu+=getEpiVal(country,periods,buKey,k); }
+  for (const k of getDGKeys()) { if (!k.includes(':407')) dg+=getEpiVal(country,periods,buKey,k); }
+  mfee=getEpiVal(country,periods,buKey,'DG BU:407')+getEpiVal(country,periods,buKey,'DG:407');
+  const up=sales+costProd, opDiv=up+dgBu, bai=opDiv+dg+mfee;
+  return {sales,costProd,dgBu,dg,mfee,up,opDiv,bai};
+}
+
+function calcPnLMulti(countries, periods, bu) {
+  let agg={sales:0,costProd:0,dgBu:0,dg:0,mfee:0,up:0,opDiv:0,bai:0};
+  for (const c of countries) {
+    const r=calcPnL(c,periods,bu);
+    // Convert to EUR or local display units
+    if (ST.currency==='eur') {
+      // periods contains year/rt info — use first period for FX
+      const fp=parsePeriod(periods[0])||{year:2026,rt:'R',month:1};
+      const scale=toEurScale(c,fp.rt,fp.year,periods);
+      for (const k of Object.keys(agg)) agg[k]+=r[k]*scale;
+    } else {
+      // Mode local: dividir per el divisor del país (CLP M, PEN k, etc.)
+      const div=getDivisor(c);
+      for (const k of Object.keys(agg)) agg[k]+=r[k]/div;
+    }
+  }
+  return agg;
+}
+
+function toEurScale(country, rt, year, periods) {
+  // Average FX over selected periods
+  let sum=0, cnt=0;
+  for (const p of periods) {
+    const pr=parsePeriod(p);
+    if (!pr) continue;
+    const fx=getFx(country, pr.rt, pr.year, pr.month);
+    sum+=fx; cnt++;
+  }
+  if (!cnt) return 1;
+  const avgFx=sum/cnt;
+  const div=getDivisor(country);
+  return (country==='CHILE'||country==='COLOMBIA') ? avgFx*1000/div : avgFx/div;
+}
+
+function getCurLabel(country) {
+  if (ST.currency==='eur') return 'EUR k';
+  return CURRENCIES[country]||'k';
+}
+
+// ── FORMAT HELPERS amb regles de signes ──────────────────────────────────────
+// Costos absoluts → sempre parèntesis (valor absolut, color gris)
+// Resultats (Sales, UP, OP, BAI) → signe - si negatiu, no parèntesis
+// Δ absolutes i % → + si positiu (verd), - si negatiu (vermell)
+const COST_TYPES = new Set(['costProd','dgBu','dg','mfee']);
+const SPECIAL_TYPES = new Set(['Financial Result','Extraordinary']); // vermell si negatiu
+
+function fmtAbs(v, type) {
+  // Costos: parèntesis, valor absolut
+  if (COST_TYPES.has(type)) {
+    const abs = Math.abs(v||0);
+    if (abs===0) return '0,0';
+    return '('+abs.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+')';
+  }
+  // Resultats: signe - si negatiu
+  if (v===null||v===undefined||isNaN(v)) return '—';
+  const neg=v<0, abs=Math.abs(v);
+  const s=abs.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+  return neg?'−'+s:s;
+}
+
+function fmtAbsCost(v) {
+  const abs = Math.abs(v||0);
+  if (abs===0) return '0,0';
+  return '('+abs.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1})+')';
+}
+
+function fmtResult(v) {
+  if (v===null||v===undefined||isNaN(v)) return '—';
+  const neg=v<0, abs=Math.abs(v);
+  const s=abs.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+  return neg?'−'+s:s;
+}
+
+function fmtDelta(v) {
+  if (v===null||v===undefined||isNaN(v)) return '—';
+  const neg=v<0, abs=Math.abs(v);
+  const s=abs.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+  return (neg?'−':'+')+s;
+}
+
+function fmtPctVal(v, type) {
+  // % de rendibilitat: gris si positiu, vermell si negatiu
+  if (v===null||v===undefined||isNaN(v)||!isFinite(v)) return '—';
+  const s=v.toFixed(1)+'%';
+  return v<0?`<span class="vn">${s}</span>`:s;
+}
+
+function fmtPctDelta(v) {
+  if (v===null||v===undefined||isNaN(v)||!isFinite(v)) return '—';
+  return (v>=0?'+':'')+v.toFixed(1)+'%';
+}
+
+function fmtPp(v) {
+  if (v===null||v===undefined||isNaN(v)||!isFinite(v)) return '—';
+  return (v>=0?'+':'')+v.toFixed(1)+'pp';
+}
+
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  const titles={exec:'Resumen Ejecutivo',pnl:'P&L',var:'Variaciones'};
+  document.getElementById('page-title').textContent=titles[id]||id;
+  event?.currentTarget?.classList.add('on');
+  if (id==='pnl') { buildPnl(); }
+  else if (id==='exec') { buildExec(); }
+  else if (id==='var') { buildVar(); }
+}
+
+function setC(c, el) {
+  ST.country=c; ST.bu='ALL'; ST.ot='ALL';
+  document.querySelectorAll('#fg-country .fb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  updateBUFilter();
+  refresh();
+}
+
+function setCur(cur, el) {
+  ST.currency=cur;
+  document.querySelectorAll('#fg-currency .fb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  updateCurrencyLock();
+  refresh();
+}
+
+function updateCurrencyLock() {
+  const isEur = ST.currency==='eur';
+  const lbl = document.getElementById('pnl-cur-lbl');
+  if (lbl) lbl.textContent = isEur?'EUR k':(CURRENCIES[ST.country]||'Local');
+  ['evol-cur-lbl','var-cur-lbl','cts-cur-lbl','sc-cur-lbl','tb-cur-lbl','evol-chart-cur-lbl'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.textContent=isEur?'EUR k':'Local';
+  });
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const btn=document.getElementById('theme-toggle');
+  btn.textContent=document.body.classList.contains('light')?'● Oscuro':'● Claro';
+}
+
+// BU short names - es carreguen del CONFIG sheet Divisiones
+let BU_SHORT = {};
+
+function updateBUFilter() {
+  const fg=document.getElementById('fg-bu');
+  if (ST.country==='ALL') { fg.style.display='none'; return; }
+  const bus=(META.bus[ST.country]||[]).sort();
+  if (!bus.length) { fg.style.display='none'; return; }
+  fg.style.display='flex';
+  fg.innerHTML='<span class="fl">División</span>';
+  const allBtn=document.createElement('button');
+  allBtn.className='fb on'; allBtn.textContent='Todas';
+  allBtn.onclick=()=>setBU('ALL',allBtn);
+  fg.appendChild(allBtn);
+  for (const bu of bus) {
+    const btn=document.createElement('button');
+    btn.className='fb';
+    // Usar nom curt si existeix, sinó usar el nom complet
+    btn.textContent=BU_SHORT[ST.country+':'+bu]||BU_SHORT['ALL:'+bu]||bu;
+    btn.title=bu; // tooltip amb nom complet
+    btn.onclick=()=>setBU(bu,btn);
+    fg.appendChild(btn);
+  }
+}
+
+function setBU(bu, el) {
+  ST.bu=bu; ST.ot='ALL';
+  document.querySelectorAll('#fg-bu .fb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  refresh();
+}
+
+function refresh() {
+  const page=document.querySelector('.page.on')?.id?.replace('page-','');
+  if (page==='exec') buildExec();
+  else if (page==='pnl') buildPnl();
+  else if (page==='var') buildVar();
+}
+
+function setPnlTab(tab, el) {
+  ST.pnlTab=tab;
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('tab-'+tab).classList.add('on');
+  el.classList.add('on');
+  if (tab==='analysis') buildAnalysis();
+  else buildEvol();
+}
+
+function setCmp(cmp, el) {
+  ST.cmp=cmp;
+  document.querySelectorAll('#cmp-b-btn,#cmp-ly-btn,#cmp-lm-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  buildAnalysis();
+}
+
+function setEV(mode, el) {
+  ST.evolMode=mode;
+  document.querySelectorAll('.rb').forEach(b=>{ if(b.textContent==='Mensual'||b.textContent==='YTD') b.classList.remove('on'); });
+  el.classList.add('on');
+  buildEvol();
+}
+
+function togEvolYear(yr, el) {
+  if (ST.evolYears.has(yr)) ST.evolYears.delete(yr); else ST.evolYears.add(yr);
+  el.classList.toggle('on');
+  buildEvol();
+}
+
+function togCY(yr, el) {
+  ST.chartYears[yr]=!ST.chartYears[yr];
+  el.classList.toggle('on');
+  buildEvolChart();
+}
+
+function setChartM(m, el) {
+  ST.chartMetric=m;
+  document.querySelectorAll('[id^="cm-"]').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  buildEvolChart();
+}
+
+function setEvolView(v, el) {
+  const chartWrap=document.getElementById('evol-chart-wrap');
+  const tbox=document.getElementById('evol-tbox');
+  if (v==='chart') { chartWrap.style.display='block'; tbox.style.display='none'; buildEvolChart(); }
+  else { chartWrap.style.display='none'; tbox.style.display='flex'; }
+}
+
+function togEvolExp(el) {
+  ST.evolExp=!ST.evolExp;
+  el.textContent=ST.evolExp?'Colapsar todo':'Expandir todo';
+  buildEvol();
+}
+
+function setVarTab(tab, el) {
+  ST.varTab=tab;
+  document.querySelectorAll('.var-tab-content').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.var-tabs .tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('vtab-'+tab).classList.add('on');
+  el.classList.add('on');
+  if (tab==='analysis') buildVarAnalysis();
+  else if (tab==='contracts') buildVarContracts();
+  else if (tab==='scatter') buildScatter();
+  else if (tab==='topbot') buildTopBot();
+}
+
+function setVarScope(s,el){ ST.varScope=s; document.querySelectorAll('#var-scope-m,#var-scope-ytd,#var-scope-fy').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildVarAnalysis(); }
+function setVarCmp(c,el){ ST.varCmp=c; document.querySelectorAll('#var-cmp-b,#var-cmp-ly,#var-cmp-lm').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildVarAnalysis(); }
+function setCtsScope(s,el){ ST.ctsScope=s; document.querySelectorAll('#cts-scope-m,#cts-scope-ytd,#cts-scope-fy').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildVarContracts(); }
+function setCtsCmp(c,el){ ST.ctsCmp=c; document.querySelectorAll('#cts-cmp-b,#cts-cmp-ly,#cts-cmp-lm').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildVarContracts(); }
+function setCtsN(n,el){ ST.ctsN=n; document.querySelectorAll('#cts-n-20,#cts-n-50,#cts-n-0').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildVarContracts(); }
+function setScScope(s,el){ ST.scScope=s; document.querySelectorAll('#sc-scope-m,#sc-scope-ytd,#sc-scope-fy').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildScatter(); }
+function setScMin(m,el){ ST.scMin=m; document.querySelectorAll('#sc-min-0,#sc-min-10,#sc-min-50,#sc-min-100').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildScatter(); }
+function setTbScope(s,el){ ST.tbScope=s; document.querySelectorAll('#tb-scope-m,#tb-scope-ytd,#tb-scope-fy').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildTopBot(); }
+function setTbCmp(c,el){ ST.tbCmp=c; document.querySelectorAll('#tb-cmp-b,#tb-cmp-ly,#tb-cmp-lm').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildTopBot(); }
+function setTbMet(m,el){ ST.tbMet=m; document.querySelectorAll('#tb-met-sales,#tb-met-up,#tb-met-upPct').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildTopBot(); }
+function setTbN(n,el){ ST.tbN=n; document.querySelectorAll('#tb-n-10,#tb-n-20').forEach(b=>b.classList.remove('on')); el.classList.add('on'); buildTopBot(); }
+
+function toggleAllExp(el) {
+  allExpanded=!allExpanded;
+  el.textContent=allExpanded?'Colapsar todo':'Expandir todo';
+  if (allExpanded) {
+    document.querySelectorAll('.exp').forEach(e=>{ e.classList.add('op'); EXP[e.dataset.k]=true; });
+    document.querySelectorAll('[data-rows]').forEach(r=>r.style.display='');
+  } else {
+    document.querySelectorAll('.exp').forEach(e=>{ e.classList.remove('op'); EXP[e.dataset.k]=false; });
+    document.querySelectorAll('[data-rows]').forEach(r=>r.style.display='none');
+  }
+}
+
+function toggleVarExp(el) {
+  ST.varExpAll=!ST.varExpAll;
+  el.textContent=ST.varExpAll?'Colapsar todo':'Expandir todo';
+  buildVarAnalysis();
+}
+
+function toggleExp(k) {
+  EXP[k]=!EXP[k];
+  const btn=document.querySelector(`.exp[data-k="${k}"]`);
+  if (btn) btn.classList.toggle('op', EXP[k]);
+  document.querySelectorAll(`[data-rows="${k}"]`).forEach(r=>r.style.display=EXP[k]?'':'none');
+}
+
+function selectOT(ot) {
+  ST.ot=ot;
+  document.querySelectorAll('.ot-item,.ot-total').forEach(i=>i.classList.remove('on'));
+  if (ot==='ALL') document.getElementById('ot-all-btn').classList.add('on');
+  else document.querySelectorAll(`.ot-item[data-ot="${ot}"]`).forEach(i=>i.classList.add('on'));
+  buildAnalysis();
+}
+
+function filterOTs() {
+  const q=document.getElementById('ot-search').value.toLowerCase();
+  document.querySelectorAll('.ot-item').forEach(i=>{
+    i.style.display=i.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+function buildMonthGrid(containerId, selMonthsSet, onClickFn, onYtdFn, onFyFn, ytdActive, fyActive) {
+  const grid=document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML='';
+  for (let m=1; m<=12; m++) {
+    const btn=document.createElement('button');
+    btn.className='mb'+(selMonthsSet.has(m)?' on':'');
+    btn.textContent=MONTHS[m-1];
+    btn.onclick=(e)=>{ onClickFn(m, btn, e); };
+    grid.appendChild(btn);
+  }
+  if (onYtdFn) {
+    const sep=document.createElement('span'); sep.className='fsep'; grid.appendChild(sep);
+    const ytdBtn=document.createElement('button');
+    ytdBtn.className='mb'+(ytdActive?' on':''); ytdBtn.textContent='YTD';
+    ytdBtn.onclick=()=>onYtdFn(ytdBtn);
+    grid.appendChild(ytdBtn);
+  }
+  if (onFyFn) {
+    const fyBtn=document.createElement('button');
+    fyBtn.className='mb'+(fyActive?' on':''); fyBtn.textContent='FY';
+    fyBtn.onclick=()=>onFyFn(fyBtn);
+    grid.appendChild(fyBtn);
+  }
+}
+
+// ── EXEC PAGE ────────────────────────────────────────────────────────────────
+function buildExec() {
+  const container=document.getElementById('exec-content');
+  if (!container) return;
+  const latestYear=2026, maxM=maxRealMonth(latestYear)||2;
+  const selM=maxM;
+
+  function getPnlForScope(countries, year, rt, upToMonth, single) {
+    const periods = single ? [periodKey(year,rt,upToMonth)]
+      : Array.from({length:upToMonth},(_,i)=>periodKey(year,rt,i+1));
+    return calcPnLMulti(countries, periods, 'ALL');
+  }
+
+  function kpiBlock(label, rVal, bVal, isRate=false) {
+    const diff = rVal - bVal;
+    const diffStr = isRate ? (diff>=0?'+':'')+diff.toFixed(1)+'pp' : fmtN(diff);
+    const diffClass = diff >= 0 ? 'vp' : 'vn';
+    const valStr = isRate ? rVal.toFixed(1)+'%' : fmtN(rVal);
+    return `<div style="flex:1;min-width:0;">
+      <div style="font-size:9px;color:var(--tx3);font-family:var(--fn);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">${label}</div>
+      <div style="font-size:17px;font-weight:600;font-family:var(--fn)">${valStr}</div>
+      <div style="font-size:10px;color:var(--tx2);margin-top:1px">(${fmtN(diff>=0?diff:-diff)})</div>
+      <div style="font-size:10px;margin-top:2px" class="${diffClass}">${diffStr}</div>
+    </div>`;
+  }
+
+  // === LATAM Consolidat ===
+  const allCountries = ST.country==='ALL' ? COUNTRIES : [ST.country];
+  const latamR_m  = getPnlForScope(allCountries, latestYear, 'R', selM, true);
+  const latamB_m  = getPnlForScope(allCountries, latestYear, 'B', selM, true);
+  const latamR_ytd= getPnlForScope(allCountries, latestYear, 'R', selM, false);
+  const latamB_ytd= getPnlForScope(allCountries, latestYear, 'B', selM, false);
+
+  const upPctR_m   = latamR_m.sales  ? latamR_m.up/latamR_m.sales*100     : 0;
+  const upPctB_m   = latamB_m.sales  ? latamB_m.up/latamB_m.sales*100     : 0;
+  const opPctR_m   = latamR_m.sales  ? latamR_m.opDiv/latamR_m.sales*100  : 0;
+  const opPctB_m   = latamB_m.sales  ? latamB_m.opDiv/latamB_m.sales*100  : 0;
+  const baiPctR_m  = latamR_m.sales  ? latamR_m.bai/latamR_m.sales*100    : 0;
+  const baiPctB_m  = latamB_m.sales  ? latamB_m.bai/latamB_m.sales*100    : 0;
+  const upPctR_ytd = latamR_ytd.sales? latamR_ytd.up/latamR_ytd.sales*100  : 0;
+  const upPctB_ytd = latamB_ytd.sales? latamB_ytd.up/latamB_ytd.sales*100  : 0;
+  const opPctR_ytd = latamR_ytd.sales? latamR_ytd.opDiv/latamR_ytd.sales*100:0;
+  const opPctB_ytd = latamB_ytd.sales? latamB_ytd.opDiv/latamB_ytd.sales*100:0;
+  const baiPctR_ytd= latamR_ytd.sales? latamR_ytd.bai/latamR_ytd.sales*100 : 0;
+  const baiPctB_ytd= latamB_ytd.sales? latamB_ytd.bai/latamB_ytd.sales*100 : 0;
+
+  const curLbl = ST.currency==='eur'?'EUR k':'Local';
+  const hastaLbl = `${curLbl} · hasta ${MONTHS[selM-1]} (${ST.country==='ALL'?'todos los países':ST.country})`;
+
+  let html=`<div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;padding:14px 18px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:600;color:var(--ac)">LATAM Consolidado</div>
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)">${hastaLbl}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr 1fr;gap:8px;align-items:center;">
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)"></div>
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn);text-align:center">SALES</div>
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn);text-align:center">UP%</div>
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn);text-align:center">OP DIV%</div>
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn);text-align:center">BAI%</div>
+
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)">${MONTHS[selM-1]}</div>
+      ${kpiBlock('SALES', latamR_m.sales, latamB_m.sales)}
+      ${kpiBlock('UP%', upPctR_m, upPctB_m, true)}
+      ${kpiBlock('OP DIV%', opPctR_m, opPctB_m, true)}
+      ${kpiBlock('BAI%', baiPctR_m, baiPctB_m, true)}
+
+      <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)">YTD</div>
+      ${kpiBlock('SALES', latamR_ytd.sales, latamB_ytd.sales)}
+      ${kpiBlock('UP%', upPctR_ytd, upPctB_ytd, true)}
+      ${kpiBlock('OP DIV%', opPctR_ytd, opPctB_ytd, true)}
+      ${kpiBlock('BAI%', baiPctR_ytd, baiPctB_ytd, true)}
+    </div>
+  </div>`;
+
+  // === Targes per país ===
+  const cardCountries = ST.country==='ALL' ? COUNTRIES : [ST.country];
+  html+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">';
+
+  for (const c of cardCountries) {
+    const rM  = getPnlForScope([c], latestYear, 'R', selM, true);
+    const bM  = getPnlForScope([c], latestYear, 'B', selM, true);
+    const rY  = getPnlForScope([c], latestYear, 'R', selM, false);
+    const bY  = getPnlForScope([c], latestYear, 'B', selM, false);
+    const lastM = maxRealMonth(latestYear) || selM;
+    const countryLabel = c.charAt(0)+c.slice(1).toLowerCase();
+
+    const upRM  = rM.sales  ? rM.up/rM.sales*100     : 0;
+    const upBM  = bM.sales  ? bM.up/bM.sales*100     : 0;
+    const opRM  = rM.sales  ? rM.opDiv/rM.sales*100  : 0;
+    const opBM  = bM.sales  ? bM.opDiv/bM.sales*100  : 0;
+    const baiRM = rM.sales  ? rM.bai/rM.sales*100    : 0;
+    const baiBM = bM.sales  ? bM.bai/bM.sales*100    : 0;
+    const upRY  = rY.sales  ? rY.up/rY.sales*100     : 0;
+    const upBY  = bY.sales  ? bY.up/bY.sales*100     : 0;
+    const opRY  = rY.sales  ? rY.opDiv/rY.sales*100  : 0;
+    const opBY  = bY.sales  ? bY.opDiv/bY.sales*100  : 0;
+    const baiRY = rY.sales  ? rY.bai/rY.sales*100    : 0;
+    const baiBY = bY.sales  ? bY.bai/bY.sales*100    : 0;
+
+    const rag = bM.sales ? ragClass((rM.sales-bM.sales)/Math.abs(bM.sales)*100) : 'y';
+    const ragColors = {g:'var(--gr)',y:'var(--yl)',r:'var(--rd)'};
+
+    function pctCell(r,b) {
+      const d=r-b; const cl=d>=0?'vp':'vn';
+      return `<div style="text-align:right"><div style="font-size:14px;font-weight:600;font-family:var(--fn)">${r.toFixed(1)}%</div><div style="font-size:10px" class="${cl}">${d>=0?'+':''}${d.toFixed(1)}pp</div></div>`;
+    }
+    function salesCell(r,b) {
+      const d=r-b; const cl=d>=0?'vp':'vn';
+      return `<div style="text-align:right"><div style="font-size:14px;font-weight:600;font-family:var(--fn)">${fmtN(r)}</div><div style="font-size:10px;color:var(--tx3)">(${fmtN(Math.abs(d))})</div></div>`;
+    }
+
+    html+=`<div style="background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;padding:12px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${ragColors[rag]};display:inline-block"></span>
+          <span style="font-size:12px;font-weight:600">${countryLabel.toUpperCase()}</span>
+        </div>
+        <span style="font-size:10px;color:var(--tx3);font-family:var(--fn)">${MONTHS[lastM-1]} · ${curLbl}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr 1fr;gap:6px;align-items:end;">
+        <div></div>
+        <div style="font-size:9px;color:var(--tx3);text-align:right;font-family:var(--fn)">SALES</div>
+        <div style="font-size:9px;color:var(--tx3);text-align:right;font-family:var(--fn)">UP%</div>
+        <div style="font-size:9px;color:var(--tx3);text-align:right;font-family:var(--fn)">OP%</div>
+        <div style="font-size:9px;color:var(--tx3);text-align:right;font-family:var(--fn)">BAI%</div>
+        <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)">${MONTHS[selM-1]}</div>
+        ${salesCell(rM.sales, bM.sales)}
+        ${pctCell(upRM, upBM)}
+        ${pctCell(opRM, opBM)}
+        ${pctCell(baiRM, baiBM)}
+        <div style="font-size:10px;color:var(--tx3);font-family:var(--fn)">YTD</div>
+        ${salesCell(rY.sales, bY.sales)}
+        ${pctCell(upRY, upBY)}
+        ${pctCell(opRY, opBY)}
+        ${pctCell(baiRY, baiBY)}
+      </div>
+    </div>`;
+  }
+  html+='</div>';
+
+  container.innerHTML=html;
+  document.getElementById('topbar-sub').textContent=`Real ${MONTHS[selM-1]} ${latestYear} · Budget FY ${latestYear}`;
+}
+
+function getEpiValSum(countries, periods, bu, keys) {
+  let sum=0;
+  for (const c of countries) for (const k of keys) sum+=getEpiVal(c,periods,bu,k);
+  return sum;
+}
+
+function buildAlerts(countries, year, month) {
+  const alerts=[];
+  const periodsR=[periodKey(year,'R',month)];
+  const periodsB=[periodKey(year,'B',month)];
+  for (const c of countries) {
+    const r=calcPnLMulti([c],periodsR,'ALL');
+    const b=calcPnLMulti([c],periodsB,'ALL');
+    if (b.sales) {
+      const vsBudget=(r.sales-b.sales)/Math.abs(b.sales)*100;
+      if (Math.abs(vsBudget)>10) alerts.push({color:vsBudget>0?'g':'r',title:`${c} · Sales`,body:`${fmtPct(vsBudget)} vs Budget`,tag:`${fmtN(r.sales)} vs ${fmtN(b.sales)}`});
+    }
+    const upPct=r.sales?r.up/r.sales*100:0;
+    if (upPct<10) alerts.push({color:'r',title:`${c} · UP%`,body:`${fmtPct(upPct)} margen brut`,tag:'Baix marge'});
+  }
+  if (!alerts.length) alerts.push({color:'g',title:'LATAM','body':'Tots els indicadors dins rang','tag':''});
+  return alerts;
+}
+
+// ── PNL PAGE ────────────────────────────────────────────────────────────────
+function buildPnl() {
+  buildMonthGrid('month-grid', ST.selMonths,
+    (m, btn, e) => {
+      if (e && e.ctrlKey) {
+        // Multiselecció amb CTRL
+        ST.pnlScope='month';
+        if (ST.selMonths.has(m)) { if(ST.selMonths.size>1) ST.selMonths.delete(m); }
+        else ST.selMonths.add(m);
+      } else {
+        ST.pnlScope='month';
+        ST.selMonths=new Set([m]);
+      }
+      // Refrescar tots els botons del grid
+      buildPnl();
+    },
+    (btn) => { ST.pnlScope='ytd'; buildPnl(); },
+    (btn) => { ST.pnlScope='fy';  buildPnl(); },
+    ST.pnlScope==='ytd', ST.pnlScope==='fy'
+  );
+  buildOTPanel();
+  if (ST.pnlTab==='analysis') buildAnalysis();
+  else buildEvol();
+}
+
+function buildOTPanel() {
+  const panel=document.getElementById('ot-panel');
+  if (ST.country==='ALL') { panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+  const latestYear=2026;
+  const periods=Array.from(ST.selMonths).map(m=>periodKey(latestYear,'R',m));
+  const otIndex=META.ot_index[ST.country]||{};
+  const items=[];
+  for (const [code, info] of Object.entries(otIndex)) {
+    if (ST.bu!=='ALL' && info.b!==ST.bu) continue;
+    let sales=0;
+    for (const epi of getSalesEpis()) {
+      for (const p of periods) sales+=(OT_DATA?.[ST.country]?.[p]?.[code]?.[epi]||0);
+    }
+    items.push({code, name:info.n, bu:info.b, sales});
+  }
+  items.sort((a,b)=>b.sales-a.sales);
+  document.getElementById('ot-count').textContent=items.length+' contratos';
+  const list=document.getElementById('ot-list');
+  list.innerHTML=items.map(i=>`
+    <div class="ot-item${ST.ot===i.code?' on':''}" data-ot="${i.code}" onclick="selectOT('${i.code}')">
+      <div>${i.code}</div>
+      <div class="ot-name">${i.name}</div>
+      <div class="ot-sales">${fmtN(i.sales)} ${getCurLabel(ST.country)}</div>
+    </div>`).join('');
+}
+
+// Calcula P&L per un sol contracte (OT) usant OT_DATA per Sales i costos directes
+function calcOTPnL(country, otCode, periodsR, periodsC) {
+  function otSum(periods, epis) {
+    let s=0;
+    for (const epi of epis) for (const p of periods) s+=(OT_DATA?.[country]?.[p]?.[otCode]?.[epi]||0);
+    return s;
+  }
+  const salesEpis=getSalesEpis();
+  const costEpis=[];
+  for (const sec of SECTIONS_ORDER) {
+    if (FLAT_SECTIONS.has(sec)) for (const e of GROUPS_ORDER[sec]) costEpis.push(e);
+    else for (const grp of GROUPS_ORDER[sec]) for (const e of (EPI_ORDER[grp]||[])) costEpis.push(e);
+  }
+  const salesR=otSum(periodsR,salesEpis), salesC=otSum(periodsC,salesEpis);
+  const costR=otSum(periodsR,costEpis), costC=otSum(periodsC,costEpis);
+  const scale = ST.currency==='eur' ? toEurScale(country,'R',2026,periodsR) : 1/getDivisor(country);
+  const scaleC = ST.currency==='eur' ? toEurScale(country,'B',2026,periodsC) : 1/getDivisor(country);
+  return {
+    R:{sales:salesR*scale, costProd:costR*scale, up:(salesR+costR)*scale, dgBu:0, opDiv:(salesR+costR)*scale, dg:0, mfee:0, bai:(salesR+costR)*scale},
+    C:{sales:salesC*scaleC, costProd:costC*scaleC, up:(salesC+costC)*scaleC, dgBu:0, opDiv:(salesC+costC)*scaleC, dg:0, mfee:0, bai:(salesC+costC)*scaleC},
+  };
+}
+
+function buildAnalysis() {
+  const latestYear=2026;
+  const countries=getCountries();
+  const bu=ST.bu==='ALL'?'ALL':ST.bu;
+  const selMonths=ST.selMonths;
+  const scope=ST.pnlScope||'month';
+  const periodsR=getScopePeriods(scope,selMonths,latestYear,'R');
+  let periodsComp=[];
+  if (ST.cmp==='B') periodsComp=getScopePeriods(scope,selMonths,latestYear,'B');
+  else if (ST.cmp==='LY') periodsComp=getScopePeriods(scope,selMonths,latestYear-1,'R');
+  else if (ST.cmp==='LM') {
+    const prevMs=new Set([...selMonths].map(m=>m>1?m-1:12));
+    periodsComp=getScopePeriods(scope,prevMs,latestYear,'R');
+  }
+
+  const tbl=document.getElementById('tbl-analysis');
+  const cmpLabel=ST.cmp==='B'?'Budget':ST.cmp==='LY'?'LY':'Mes ant.';
+  let html=`<thead><tr>
+    <th>Línea P&L</th>
+    <th>Real</th><th>%Sales</th>
+    <th>${cmpLabel}</th><th>%Sales</th>
+    <th>Δ Abs</th><th>Δ %</th>
+  </tr></thead><tbody>`;
+
+  // Si hi ha un contracte seleccionat, usar OT_DATA
+  if (ST.ot !== 'ALL' && ST.country !== 'ALL') {
+    const otPnl = calcOTPnL(ST.country, ST.ot, periodsR, periodsComp);
+    const r=otPnl.R, c=otPnl.C;
+
+    function addOTRow(type, label, cssClass) {
+      const vR=r[type], vC=c[type];
+      const delta=vR-vC, deltaPct=vC?delta/Math.abs(vC)*100:null;
+      const pctR=r.sales?vR/r.sales*100:null, pctC=c.sales?vC/c.sales*100:null;
+      const isNeg=type==='costProd';
+      const dClass=delta>=0?(isNeg?'vn':'vp'):(isNeg?'vp':'vn');
+      html+=`<tr class="${cssClass}"><td>${label}</td>
+        <td>${fmtAbs(vR,type)}</td><td class="pct">${pctR!==null?fmtPct(pctR):'—'}</td>
+        <td>${fmtAbs(vC,type)}</td><td class="pct">${pctC!==null?fmtPct(pctC):'—'}</td>
+        <td class="${dClass}">${fmtDelta(delta)}</td><td class="${dClass} pct">${deltaPct!==null?fmtPctDelta(deltaPct):'—'}</td>
+      </tr>`;
+    }
+    addOTRow('sales','Sales','r-sales');
+    addOTRow('costProd','Coste Productivo','r-cp');
+    addOTRow('up','UP (Utilidad Proyecto)','r-up');
+    html+=`<tr class="r-dgbu"><td>DG División</td><td>—</td><td></td><td>—</td><td></td><td>—</td><td></td></tr>`;
+    addOTRow('opDiv','OP División','r-opdiv');
+    html+=`<tr class="r-dg"><td>DG País</td><td>—</td><td></td><td>—</td><td></td><td>—</td><td></td></tr>`;
+    html+=`<tr class="r-mfee"><td>MFEE</td><td>—</td><td></td><td>—</td><td></td><td>—</td><td></td></tr>`;
+    addOTRow('bai','BAI','r-bai');
+    html+='</tbody>';
+    tbl.innerHTML=html;
+    const otInfo=META.ot_index[ST.country]?.[ST.ot];
+    document.getElementById('pnl-scope').textContent=`${ST.country} · ${ST.ot}${otInfo?' · '+otInfo.n:''}`;
+    document.getElementById('pnl-cur-lbl').textContent=ST.currency==='eur'?'EUR k':(CURRENCIES[ST.country]||'Local');
+    return;
+  }
+
+  function addRows(type, label, cssClass, countries, periodsR, periodsC, bu) {
+    const r=calcPnLMulti(countries,periodsR,bu);
+    const c=calcPnLMulti(countries,periodsC,bu);
+    const vR=r[type], vC=c[type];
+    const delta=vR-vC, deltaPct=vC?delta/Math.abs(vC)*100:null;
+    const salesR=r.sales, salesC=c.sales;
+    const pctR=salesR?vR/salesR*100:null, pctC=salesC?vC/salesC*100:null;
+    const dClass=delta>=0?'vp':'vn';
+    html+=`<tr class="${cssClass}"><td>${label}</td>
+      <td>${fmtAbs(vR,type)}</td><td class="pct">${pctR!==null?fmtPctVal(pctR,type):'—'}</td>
+      <td>${fmtAbs(vC,type)}</td><td class="pct">${pctC!==null?fmtPctVal(pctC,type):'—'}</td>
+      <td class="${dClass}">${fmtDelta(delta)}</td><td class="${dClass} pct">${deltaPct!==null?fmtPctDelta(deltaPct):'—'}</td>
+    </tr>`;
+  }
+
+  addRows('sales','Sales','r-sales',countries,periodsR,periodsComp,bu);
+  html+=buildCostSection(countries,periodsR,periodsComp,bu,'PROD');
+  addRows('up','UP (Utilidad Proyecto)','r-up',countries,periodsR,periodsComp,bu);
+  html+=buildCostSection(countries,periodsR,periodsComp,bu,'DG BU','r-dgbu','DG División');
+  addRows('opDiv','OP División','r-opdiv',countries,periodsR,periodsComp,bu);
+  html+=buildCostSection(countries,periodsR,periodsComp,bu,'DG','r-dg','DG País');
+  {
+    const r=calcPnLMulti(countries,periodsR,bu), c=calcPnLMulti(countries,periodsComp,bu);
+    const delta=r.mfee-c.mfee, dp=c.mfee?delta/Math.abs(c.mfee)*100:null;
+    html+=`<tr class="r-mfee"><td>MFEE</td><td class="num-abs">${fmtAbs(r.mfee,'mfee')}</td><td></td><td class="num-abs">${fmtAbs(c.mfee,'mfee')}</td><td></td><td class="${delta>=0?'vp':'vn'}">${fmtDelta(delta)}</td><td>${dp!==null?fmtPctDelta(dp):'—'}</td></tr>`;
+  }
+  addRows('bai','BAI','r-bai',countries,periodsR,periodsComp,bu);
+
+  html+='</tbody>';
+  tbl.innerHTML=html;
+  document.getElementById('pnl-scope').textContent=ST.country==='ALL'?'LATAM':ST.country+(ST.bu!=='ALL'?' · '+(BU_SHORT[ST.country+':'+ST.bu]||ST.bu):'');
+  document.getElementById('pnl-cur-lbl').textContent=ST.currency==='eur'?'EUR k':(CURRENCIES[ST.country]||'Local');
+}
+
+function buildCostSection(countries, periodsR, periodsC, bu, typePrefix, sectionClass, sectionLabel) {
+  let html='';
+  const cssClass = sectionClass || 'r-cp';
+
+  // Fila de totals del bloc (Coste Productivo / DG División / DG País)
+  if (sectionLabel) {
+    let totR=0, totC=0;
+    for (const sec of SECTIONS_ORDER) {
+      const secEpis = FLAT_SECTIONS.has(sec)
+        ? GROUPS_ORDER[sec].map(e=>({e}))
+        : (GROUPS_ORDER[sec]||[]).flatMap(grp=>(EPI_ORDER[grp]||[]).map(e=>({e,grp})));
+      for (const {e} of secEpis) {
+        totR+=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+        totC+=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+      }
+    }
+    const totKey=`${typePrefix}_TOTAL`;
+    const delta=totR-totC, dp=totC?delta/Math.abs(totC)*100:null;
+    const salesR=calcPnLMulti(countries,periodsR,bu).sales;
+    const pctR=salesR?totR/salesR*100:null;
+    html+=`<tr class="${cssClass}" onclick="toggleExp('${totKey}')">
+      <td class="exp${EXP[totKey]?' op':''}" data-k="${totKey}">${sectionLabel}</td>
+      <td>${fmtAbsCost(totR)}</td><td class="pct">${pctR!==null?fmtPctVal(pctR,'costProd'):'—'}</td>
+      <td>${fmtAbsCost(totC)}</td><td></td>
+      <td class="${delta>=0?'vp':'vn'}">${fmtDelta(delta)}</td><td class="pct">${dp!==null?fmtPctDelta(dp):'—'}</td>
+    </tr>`;
+
+    // Seccions (Staff, Operating Costs, etc.) com a sub-nivell
+    for (const sec of SECTIONS_ORDER) {
+      const secEpis = FLAT_SECTIONS.has(sec)
+        ? GROUPS_ORDER[sec].map(e=>({e,grp:null}))
+        : (GROUPS_ORDER[sec]||[]).flatMap(grp=>(EPI_ORDER[grp]||[]).map(e=>({e,grp})));
+      let secR=0, secC=0;
+      for (const {e} of secEpis) {
+        secR+=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+        secC+=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+      }
+      if (!secR && !secC) continue;
+      const secKey=`${typePrefix}_${sec}`;
+      const sDelta=secR-secC, sDp=secC?sDelta/Math.abs(secC)*100:null;
+      const sPctR=salesR?secR/salesR*100:null;
+      html+=`<tr class="r-sec" data-rows="${totKey}" style="display:${EXP[totKey]?'':'none'}" onclick="toggleExp('${secKey}')">
+        <td class="exp${EXP[secKey]?' op':''}" data-k="${secKey}" style="padding-left:20px!important">${SECTION_LABELS[sec]||sec}</td>
+        <td>${fmtAbsCost(secR)}</td><td class="pct">${sPctR!==null?fmtPctVal(sPctR,'costProd'):'—'}</td>
+        <td>${fmtAbsCost(secC)}</td><td></td>
+        <td class="${sDelta>=0?'vp':'vn'}">${fmtDelta(sDelta)}</td><td class="pct">${sDp!==null?fmtPctDelta(sDp):'—'}</td>
+      </tr>`;
+
+      if (FLAT_SECTIONS.has(sec)) {
+        // Epígrafes directament (DA, Financial Result, Extraordinary)
+        for (const e of GROUPS_ORDER[sec]) {
+          const vR=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+          const vC=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+          if (!vR && !vC) continue;
+          const d=vR-vC;
+          html+=`<tr class="r-epi" data-rows="${secKey}" style="display:none">
+            <td style="padding-left:32px!important">${EPI_LABELS[e]||e}</td>
+            <td>${fmtN(vR)}</td><td></td><td>${fmtN(vC)}</td><td></td>
+            <td>${fmtN(d)}</td><td></td></tr>`;
+        }
+      } else {
+        // Grups (Salaries, Commercial costs, etc.)
+        for (const grp of (GROUPS_ORDER[sec]||[])) {
+          const grpEpis=EPI_ORDER[grp]||[];
+          let grpR=0, grpC=0;
+          for (const e of grpEpis) {
+            grpR+=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+            grpC+=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+          }
+          if (!grpR && !grpC) continue;
+          const grpKey=`${typePrefix}_${sec}_${grp}`;
+          const gDelta=grpR-grpC, gDp=grpC?gDelta/Math.abs(grpC)*100:null;
+          html+=`<tr class="r-grp" data-rows="${secKey}" style="display:none" onclick="toggleExp('${grpKey}')">
+            <td class="exp${EXP[grpKey]?' op':''}" data-k="${grpKey}" style="padding-left:28px!important">${grp}</td>
+            <td>${fmtAbsCost(grpR)}</td><td></td><td>${fmtAbsCost(grpC)}</td><td></td>
+            <td class="${gDelta>=0?'vp':'vn'}">${fmtDelta(gDelta)}</td><td class="pct">${gDp!==null?fmtPctDelta(gDp):'—'}</td>
+          </tr>`;
+          for (const e of grpEpis) {
+            const vR=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+            const vC=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+            if (!vR && !vC) continue;
+            const d=vR-vC;
+            html+=`<tr class="r-epi" data-rows="${grpKey}" style="display:none">
+              <td style="padding-left:40px!important">${EPI_LABELS[e]||e}</td>
+              <td>${fmtN(vR)}</td><td></td><td>${fmtN(vC)}</td><td></td>
+              <td>${fmtN(d)}</td><td></td></tr>`;
+          }
+        }
+      }
+    }
+    return html;
+  }
+
+  // Sense sectionLabel: renderitzar seccions directament (cas Sales/PROD sense capçalera bloc)
+  for (const sec of SECTIONS_ORDER) {
+    const secEpis = FLAT_SECTIONS.has(sec)
+      ? GROUPS_ORDER[sec].map(e=>({e,grp:null}))
+      : (GROUPS_ORDER[sec]||[]).flatMap(grp=>(EPI_ORDER[grp]||[]).map(e=>({e,grp})));
+    let secR=0, secC=0;
+    for (const {e} of secEpis) {
+      secR+=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+      secC+=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+    }
+    if (!secR && !secC) continue;
+    const secKey=`${typePrefix}_${sec}`;
+    const delta=secR-secC, dp=secC?delta/Math.abs(secC)*100:null;
+    const salesR=calcPnLMulti(countries,periodsR,bu).sales;
+    const pctR=salesR?secR/salesR*100:null;
+    html+=`<tr class="r-sec" onclick="toggleExp('${secKey}')">
+      <td class="exp${EXP[secKey]?' op':''}" data-k="${secKey}">${SECTION_LABELS[sec]||sec}</td>
+      <td>${fmtN(secR)}</td><td class="pct">${pctR!==null?fmtPct(pctR):'—'}</td>
+      <td>${fmtN(secC)}</td><td></td>
+      <td>${fmtN(delta)}</td><td class="pct">${dp!==null?fmtPct(dp):'—'}</td>
+    </tr>`;
+    if (FLAT_SECTIONS.has(sec)) {
+      for (const e of GROUPS_ORDER[sec]) {
+        const vR=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+        const vC=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+        if (!vR && !vC) continue;
+        html+=`<tr class="r-epi" data-rows="${secKey}" style="display:none">
+          <td>${EPI_LABELS[e]||e}</td>
+          <td>${fmtN(vR)}</td><td></td><td>${fmtN(vC)}</td><td></td>
+          <td>${fmtN(vR-vC)}</td><td></td></tr>`;
+      }
+    } else {
+      for (const grp of (GROUPS_ORDER[sec]||[])) {
+        for (const e of (EPI_ORDER[grp]||[])) {
+          const vR=getEpiValSum(countries,periodsR,[bu],[`${typePrefix}:${e}`]);
+          const vC=getEpiValSum(countries,periodsC,[bu],[`${typePrefix}:${e}`]);
+          if (!vR && !vC) continue;
+          html+=`<tr class="r-epi" data-rows="${secKey}" style="display:none">
+            <td>${EPI_LABELS[e]||e}</td>
+            <td>${fmtN(vR)}</td><td></td><td>${fmtN(vC)}</td><td></td>
+            <td>${fmtN(vR-vC)}</td><td></td></tr>`;
+        }
+      }
+    }
+  }
+  return html;
+}
+
+// ── EVOL TAB ────────────────────────────────────────────────────────────────
+function buildEvol() {
+  const countries=getCountries(), bu=ST.bu==='ALL'?'ALL':ST.bu;
+  const cols=[];
+  if (ST.evolYears.has('25R')) for(let m=1;m<=12;m++) cols.push({year:2025,rt:'R',month:m,label:`${MONTHS[m-1]}`});
+  if (ST.evolYears.has('26R')) for(let m=1;m<=12;m++) cols.push({year:2026,rt:'R',month:m,label:`${MONTHS[m-1]}`});
+  if (ST.evolYears.has('26B')) for(let m=1;m<=12;m++) cols.push({year:2026,rt:'B',month:m,label:`${MONTHS[m-1]}`});
+
+  const rows=['sales','costProd','up','dgBu','opDiv','dg','mfee','bai'];
+  const labels={sales:'Sales',costProd:'Coste Prod.',up:'UP',dgBu:'DG División',opDiv:'OP División',dg:'DG País',mfee:'MFEE',bai:'BAI'};
+  const classes={sales:'r-sales',costProd:'r-cp',up:'r-up',dgBu:'r-dgbu',opDiv:'r-opdiv',dg:'r-dg',mfee:'r-mfee',bai:'r-bai'};
+
+  let html='<thead><tr><th>Línea</th>';
+  let prevYear=null;
+  for (const c of cols) {
+    const isNewYear=c.year!==prevYear;
+    const label=c.rt==='B'?`B${MONTHS[c.month-1]}`:`${MONTHS[c.month-1]}`;
+    html+=`<th${isNewYear?' class="yr-sep"':''}>${c.year===2025?'25':''} ${label}</th>`;
+    prevYear=c.year;
+  }
+  html+='</tr></thead><tbody>';
+
+  for (const row of rows) {
+    const cssClass=classes[row];
+    html+=`<tr class="${cssClass}"><td>${labels[row]}</td>`;
+    prevYear=null;
+    for (const c of cols) {
+      const periods=[periodKey(c.year,c.rt,c.month)];
+      const pnl=calcPnLMulti(countries,periods,bu);
+      const v=pnl[row];
+      const isNewYear=c.year!==prevYear;
+      html+=`<td${isNewYear?' class="yr-sep"':''}>${fmtN(v)}</td>`;
+      prevYear=c.year;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  document.getElementById('tbl-evol').innerHTML=html;
+}
+
+function buildEvolChart() {
+  const countries=getCountries(), bu=ST.bu==='ALL'?'ALL':ST.bu;
+  const datasets=[], labels=[];
+  const years=Object.entries(ST.chartYears).filter(([,v])=>v).map(([y])=>+y);
+
+  for (let m=1;m<=12;m++) labels.push(MONTHS[m-1]);
+
+  const colorMap={2025:'rgba(79,140,255,.8)',2026:'rgba(34,201,122,.8)'};
+  for (const year of years) {
+    const data=[];
+    for (let m=1;m<=12;m++) {
+      const periods=[periodKey(year,'R',m)];
+      const pnl=calcPnLMulti(countries,periods,bu);
+      let v=pnl.sales;
+      if (ST.chartMetric==='UP') v=pnl.up;
+      else if (ST.chartMetric==='UPpct') v=pnl.sales?pnl.up/pnl.sales*100:0;
+      else if (ST.chartMetric==='OP_DIV') v=pnl.opDiv;
+      else if (ST.chartMetric==='OPpct') v=pnl.sales?pnl.opDiv/pnl.sales*100:0;
+      else if (ST.chartMetric==='BAI') v=pnl.bai;
+      else if (ST.chartMetric==='BAIpct') v=pnl.sales?pnl.bai/pnl.sales*100:0;
+      else if (ST.chartMetric==='DG_total') v=pnl.dg+pnl.mfee;
+      else if (ST.chartMetric==='DGpct') v=pnl.sales?(pnl.dg+pnl.mfee)/pnl.sales*100:0;
+      data.push(v||null);
+    }
+    datasets.push({label:String(year),data,borderColor:colorMap[year]||'#aaa',backgroundColor:(colorMap[year]||'#aaa').replace('.8','.15'),tension:.3,pointRadius:3,fill:false});
+  }
+
+  const ctx=document.getElementById('evol-chart');
+  if (chart) chart.destroy();
+  chart=new Chart(ctx,{type:'line',data:{labels,datasets},options:{responsive:true,plugins:{legend:{display:true,labels:{color:'#8b91a8',font:{size:11}}}},scales:{x:{ticks:{color:'#555d75',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#555d75',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'}}}}});
+}
+
+// ── VAR PAGE ────────────────────────────────────────────────────────────────
+function buildVar() {
+  buildMonthGrid('var-month-grid', ST.varSelMonths, (m,btn,e)=>{
+    ST.varSelMonths=new Set([m]);
+    buildVar(); buildVarAnalysis();
+  }, null, null, false, false);
+  buildMonthGrid('cts-month-grid', ST.ctsSelMonths, (m,btn,e)=>{
+    ST.ctsSelMonths=new Set([m]);
+    buildVar(); buildVarContracts();
+  }, null, null, false, false);
+  buildMonthGrid('sc-month-grid', ST.scSelMonths, (m,btn,e)=>{
+    ST.scSelMonths=new Set([m]);
+    buildVar(); buildScatter();
+  }, null, null, false, false);
+  buildMonthGrid('tb-month-grid', ST.tbSelMonths, (m,btn,e)=>{
+    ST.tbSelMonths=new Set([m]);
+    buildVar(); buildTopBot();
+  }, null, null, false, false);
+  buildVarAnalysis();
+}
+
+function buildVarAnalysis() {
+  const latestYear=2026;
+  const periodsR=getScopePeriods(ST.varScope,ST.varSelMonths,latestYear,'R');
+  let periodsC=[];
+  if (ST.varCmp==='B') periodsC=getScopePeriods(ST.varScope,ST.varSelMonths,latestYear,'B');
+  else if (ST.varCmp==='LY') periodsC=getScopePeriods(ST.varScope,ST.varSelMonths,latestYear-1,'R');
+  else if (ST.varCmp==='LM') {
+    const prevMs=new Set([...ST.varSelMonths].map(m=>m>1?m-1:12));
+    periodsC=getScopePeriods(ST.varScope,prevMs,latestYear,'R');
+  }
+
+  const cmpLabel=ST.varCmp==='B'?'Budget':ST.varCmp==='LY'?'LY':'Mes ant.';
+  const metrics=['sales','up','opDiv','bai'];
+  const mLabels={sales:'Sales',up:'UP',opDiv:'OP División',bai:'BAI'};
+  const mClass={sales:'vr-sales',up:'vr-up',opDiv:'vr-opdiv',bai:'vr-bai'};
+
+  let html='';
+
+  if (ST.country==='ALL') {
+    // Vista LATAM: columnes per país + Total
+    const showCountries=COUNTRIES;
+    html='<thead><tr><th>Línea P&L</th>';
+    for (const c of showCountries) {
+      const shortC=c.substring(0,3);
+      html+=`<th class="cg-sep cg-val">${shortC}<br><small>Real</small></th>`;
+      html+=`<th class="cg-dlt">Δ ${cmpLabel}</th>`;
+    }
+    html+=`<th class="cg-sep cg-val">TOT<br><small>Real</small></th>`;
+    html+=`<th class="cg-dlt">Δ</th>`;
+    html+='</tr></thead><tbody>';
+
+    for (const m of metrics) {
+      html+=`<tr class="${mClass[m]}"><td>${mLabels[m]}</td>`;
+      let totR=0, totC=0;
+      for (const c of showCountries) {
+        const r=calcPnLMulti([c],periodsR,'ALL');
+        const comp=calcPnLMulti([c],periodsC,'ALL');
+        const vR=r[m], vC=comp[m], delta=vR-vC;
+        const dClass=delta>=0?'vp':'vn';
+        html+=`<td class="cg-sep">${fmtResult(vR)}</td><td class="td-delta ${dClass}">${fmtDelta(delta)}</td>`;
+        totR+=vR; totC+=vC;
+      }
+      const totD=totR-totC, dc=totD>=0?'vp':'vn';
+      html+=`<td class="cg-sep">${fmtResult(totR)}</td><td class="${dc}">${fmtDelta(totD)}</td>`;
+      html+='</tr>';
+    }
+  } else {
+    // Vista un país: columnes per BU + Total
+    const country=ST.country;
+    const bus=META.bus[country]||[];
+    html='<thead><tr><th>Línea P&L</th>';
+    html+=`<th class="cg-sep cg-val">Total<br><small>Real</small></th><th class="pct">%S</th><th class="cg-dlt">Δ</th>`;
+    for (const bu of bus) {
+      const buShort=BU_SHORT[country+':'+bu]||BU_SHORT['ALL:'+bu]||bu;
+      html+=`<th class="cg-sep cg-val">${buShort}<br><small>Real</small></th><th class="pct">%S</th><th class="cg-dlt">Δ</th>`;
+    }
+    html+='</tr></thead><tbody>';
+
+    for (const m of metrics) {
+      html+=`<tr class="${mClass[m]}"><td>${mLabels[m]}</td>`;
+      const rTot=calcPnLMulti([country],periodsR,'ALL');
+      const cTot=calcPnLMulti([country],periodsC,'ALL');
+      const vTotR=rTot[m], vTotC=cTot[m], dTot=vTotR-vTotC;
+      const pctTot=rTot.sales?vTotR/rTot.sales*100:null;
+      html+=`<td class="cg-sep">${fmtResult(vTotR)}</td><td class="pct">${pctTot!==null?fmtPctVal(pctTot,m):'—'}</td><td class="${dTot>=0?'vp':'vn'}">${fmtDelta(dTot)}</td>`;
+      for (const bu of bus) {
+        const r=calcPnLMulti([country],periodsR,bu);
+        const comp=calcPnLMulti([country],periodsC,bu);
+        const vR=r[m], vC=comp[m], delta=vR-vC;
+        const pct=r.sales?vR/r.sales*100:null;
+        const dClass=delta>=0?'vp':'vn';
+        html+=`<td class="cg-sep">${fmtResult(vR)}</td><td class="pct">${pct!==null?fmtPctVal(pct,m):'—'}</td><td class="${dClass}">${fmtDelta(delta)}</td>`;
+      }
+      html+='</tr>';
+    }
+  }
+
+  html+='</tbody>';
+  document.getElementById('tbl-var').innerHTML=html;
+  document.getElementById('var-scope-lbl').textContent=ST.country==='ALL'?'LATAM · Todos los países':ST.country;
+  document.getElementById('var-cur-lbl').textContent=ST.currency==='eur'?'EUR k':'Local';
+}
+
+function buildVarContracts() {
+  const latestYear=2026;
+  const periodsR=getScopePeriods(ST.ctsScope,ST.ctsSelMonths,latestYear,'R');
+  let periodsC=[];
+  if (ST.ctsCmp==='B') periodsC=getScopePeriods(ST.ctsScope,ST.ctsSelMonths,latestYear,'B');
+  else if (ST.ctsCmp==='LY') periodsC=getScopePeriods(ST.ctsScope,ST.ctsSelMonths,latestYear-1,'R');
+  else { const pm=new Set([...ST.ctsSelMonths].map(m=>m>1?m-1:12)); periodsC=getScopePeriods(ST.ctsScope,pm,latestYear,'R'); }
+
+  const cmpLabel=ST.ctsCmp==='B'?'Budget':ST.ctsCmp==='LY'?'LY':'Mes ant.';
+  const countries=getCountries();
+  const items=[];
+
+  for (const c of countries) {
+    const otIndex=META.ot_index[c]||{};
+    for (const [code, info] of Object.entries(otIndex)) {
+      if (ST.bu!=='ALL' && info.b!==ST.bu) continue;
+      let salesR=0, salesC=0, costR=0, costC=0;
+      const salesEpis=getSalesEpis();
+      const allCostEpis=[];
+      for (const sec of SECTIONS_ORDER) {
+        if (FLAT_SECTIONS.has(sec)) for (const e of GROUPS_ORDER[sec]) allCostEpis.push(e);
+        else for (const grp of GROUPS_ORDER[sec]) for (const e of (EPI_ORDER[grp]||[])) allCostEpis.push(e);
+      }
+      for (const epi of salesEpis) {
+        for (const p of periodsR) salesR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+        for (const p of periodsC) salesC+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+      }
+      for (const epi of allCostEpis) {
+        for (const p of periodsR) costR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+        for (const p of periodsC) costC+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+      }
+      const upR=salesR+costR, upC=salesC+costC;
+      const upPctR=salesR?upR/salesR*100:null, upPctB=salesC?upC/salesC*100:null;
+      const dSales=salesR-salesC, dUp=upR-upC;
+      const dUpPct=(upPctR!==null&&upPctB!==null)?upPctR-upPctB:null;
+      if (salesR===0&&salesC===0) continue;
+
+      // Escala
+      const scale=ST.currency==='eur'?toEurScale(c,'R',latestYear,periodsR):1/getDivisor(c);
+      const scaleC=ST.currency==='eur'?toEurScale(c,'B',latestYear,periodsC):1/getDivisor(c);
+
+      items.push({country:c, code, name:info.n,
+        bu: BU_SHORT[c+':'+info.b]||BU_SHORT['ALL:'+info.b]||info.b||'',
+        salesR:salesR*scale, salesB:salesC*scaleC,
+        dSales:(salesR*scale)-(salesC*scaleC),
+        upR:upR*scale, upB:upC*scaleC,
+        dUp:(upR*scale)-(upC*scaleC),
+        upPctR, upPctB, dUpPct
+      });
+    }
+  }
+
+  // Ordenar per salesR descendent per defecte
+  const sortCol = ST.ctsSort?.col || 'salesR';
+  const sortDir = ST.ctsSort?.dir || 'desc';
+  items.sort((a,b)=>{
+    const va=a[sortCol]??-Infinity, vb=b[sortCol]??-Infinity;
+    return sortDir==='asc'?va-vb:vb-va;
+  });
+
+  const shown=ST.ctsN?items.slice(0,ST.ctsN):items;
+
+  // Totals
+  const totSalesR=shown.reduce((s,i)=>s+i.salesR,0);
+  const totSalesB=shown.reduce((s,i)=>s+i.salesB,0);
+  const totDSales=totSalesR-totSalesB;
+  const totUpR=shown.reduce((s,i)=>s+i.upR,0);
+  const totUpB=shown.reduce((s,i)=>s+i.upB,0);
+  const totDUp=totUpR-totUpB;
+  const totUpPctR=totSalesR?totUpR/totSalesR*100:null;
+  const totUpPctB=totSalesB?totUpB/totSalesB*100:null;
+  const totDUpPct=(totUpPctR!==null&&totUpPctB!==null)?totUpPctR-totUpPctB:null;
+
+  function thSort(col, label) {
+    const active=ST.ctsSort?.col===col;
+    const dir=active?(ST.ctsSort.dir==='asc'?'↑':'↓'):'';
+    return `<th onclick="sortCts('${col}')" style="cursor:pointer">${label}${dir?'<span class="sort-ind">'+dir+'</span>':''}</th>`;
+  }
+
+  let html=`<thead><tr>
+    ${thSort('name','Contrato')}
+    <th>Div.</th>
+    ${thSort('salesR','Sales R')}
+    ${thSort('salesB','Sales '+cmpLabel)}
+    ${thSort('dSales','Δ Sales')}
+    ${thSort('upR','UP R')}
+    ${thSort('upB','UP '+cmpLabel)}
+    ${thSort('dUp','Δ UP')}
+    ${thSort('upPctR','UP% R')}
+    ${thSort('upPctB','UP% '+cmpLabel)}
+    ${thSort('dUpPct','Δ pp')}
+  </tr></thead><tbody>`;
+
+  // Fila total
+  html+=`<tr class="cts-total">
+    <td><strong>TOTAL (${shown.length} contratos)</strong></td>
+    <td></td>
+    <td><strong>${fmtResult(totSalesR)}</strong></td>
+    <td><strong>${fmtResult(totSalesB)}</strong></td>
+    <td class="${totDSales>=0?'vp':'vn'}"><strong>${fmtDelta(totDSales)}</strong></td>
+    <td><strong>${fmtResult(totUpR)}</strong></td>
+    <td><strong>${fmtResult(totUpB)}</strong></td>
+    <td class="${totDUp>=0?'vp':'vn'}"><strong>${fmtDelta(totDUp)}</strong></td>
+    <td>${totUpPctR!==null?totUpPctR.toFixed(1)+'%':'—'}</td>
+    <td>${totUpPctB!==null?totUpPctB.toFixed(1)+'%':'—'}</td>
+    <td class="${totDUpPct>=0?'vp':'vn'}">${totDUpPct!==null?fmtPp(totDUpPct):'—'}</td>
+  </tr>`;
+
+  for (const i of shown) {
+    const dSalesClass=i.dSales>=0?'vp':'vn';
+    const dUpClass=i.dUp>=0?'vp':'vn';
+    const dPpClass=i.dUpPct>=0?'vp':'vn';
+    const upPctRClass=i.upPctR!==null?(i.upPctR<0?'vn':''):'' ;
+    html+=`<tr>
+      <td><div class="cts-code">${i.code}</div><div class="cts-name">${i.name}</div></td>
+      <td class="cts-bu">${i.bu}</td>
+      <td>${fmtResult(i.salesR)}</td>
+      <td>${fmtResult(i.salesB)}</td>
+      <td class="${dSalesClass}">${fmtDelta(i.dSales)}</td>
+      <td>${fmtResult(i.upR)}</td>
+      <td>${fmtResult(i.upB)}</td>
+      <td class="${dUpClass}">${fmtDelta(i.dUp)}</td>
+      <td class="${upPctRClass}">${i.upPctR!==null?i.upPctR.toFixed(1)+'%':'—'}</td>
+      <td>${i.upPctB!==null?i.upPctB.toFixed(1)+'%':'—'}</td>
+      <td class="${dPpClass}">${i.dUpPct!==null?fmtPp(i.dUpPct):'—'}</td>
+    </tr>`;
+  }
+  html+='</tbody>';
+  document.getElementById('tbl-cts').innerHTML=html;
+}
+
+function sortCts(col) {
+  if (ST.ctsSort.col===col) ST.ctsSort.dir=ST.ctsSort.dir==='asc'?'desc':'asc';
+  else { ST.ctsSort.col=col; ST.ctsSort.dir='desc'; }
+  buildVarContracts();
+}
+
+function buildScatter() {
+  const latestYear=2026;
+  const periodsR=getScopePeriods(ST.scScope,ST.scSelMonths,latestYear,'R');
+  const countries=getCountries();
+  const allData=[];
+
+  for (const c of countries) {
+    const otIndex=META.ot_index[c]||{};
+    for (const [code, info] of Object.entries(otIndex)) {
+      if (ST.bu!=='ALL' && info.b!==ST.bu) continue;
+      let salesR=0, costR=0;
+      const salesEpis=getSalesEpis();
+      const allCostEpis=[];
+      for (const sec of SECTIONS_ORDER) {
+        if (FLAT_SECTIONS.has(sec)) for (const e of GROUPS_ORDER[sec]) allCostEpis.push(e);
+        else for (const grp of GROUPS_ORDER[sec]) for (const e of (EPI_ORDER[grp]||[])) allCostEpis.push(e);
+      }
+      for (const epi of salesEpis) for (const p of periodsR) salesR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+      for (const epi of allCostEpis) for (const p of periodsR) costR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+
+      const scale=ST.currency==='eur'?toEurScale(c,'R',latestYear,periodsR):1/getDivisor(c);
+      const salesScaled=salesR*scale;
+      if (salesScaled<=ST.scMin) continue;
+      const upPct=salesR?(salesR+costR)/salesR*100:0;
+      const buShort=BU_SHORT[c+':'+info.b]||BU_SHORT['ALL:'+info.b]||info.b||'OTH';
+      const buKey=Object.entries(BU_SHORT).find(([k,v])=>v===buShort&&k.startsWith(c+':'))?.[0]?.split(':')[1]||info.b||'OTH';
+      allData.push({x:salesScaled, y:upPct, label:code, name:info.n, country:c, bu:info.b, buShort});
+    }
+  }
+
+  // Detectar outliers (IQR method per Y)
+  const ys=allData.map(d=>d.y).sort((a,b)=>a-b);
+  const q1=ys[Math.floor(ys.length*0.25)], q3=ys[Math.floor(ys.length*0.75)];
+  const iqr=q3-q1, lo=q1-3*iqr, hi=q3+3*iqr;
+  const outliers=allData.filter(d=>d.y<lo||d.y>hi);
+  const mainData=ST.scShowOutliers?allData:allData.filter(d=>d.y>=lo&&d.y<=hi);
+
+  // Agrupar per BU per la llegenda
+  const buGroups={};
+  for (const d of mainData) {
+    if (!buGroups[d.buShort]) buGroups[d.buShort]=[];
+    buGroups[d.buShort].push(d);
+  }
+
+  const avgUpPct=mainData.length?mainData.reduce((s,d)=>s+d.y,0)/mainData.length:0;
+
+  // Construir llegenda
+  const legendEl=document.getElementById('sc-legend');
+  if (legendEl) {
+    let lhtml=`<div style="font-size:11px;color:var(--tx2);margin-bottom:6px">${mainData.length} contratos · Avg UP% ${avgUpPct.toFixed(1)}%</div>`;
+    for (const [buShort, pts] of Object.entries(buGroups)) {
+      const col=BU_COLORS[buShort]||BU_COLORS['OTH'];
+      lhtml+=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:11px;">
+        <span style="width:10px;height:10px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span>
+        <span style="color:var(--tx1)">${buShort}</span>
+        <span style="color:var(--tx3);margin-left:auto">${pts.length}</span>
+      </div>`;
+    }
+    if (outliers.length && !ST.scShowOutliers) {
+      lhtml+=`<div style="margin-top:8px;padding:6px 8px;background:var(--bg3);border-radius:4px;cursor:pointer" onclick="toggleScOutliers()">
+        <span style="font-size:10px;color:var(--yl)">◎ Mostrar outliers (${outliers.length})</span>
+        <div style="font-size:9px;color:var(--tx3);margin-top:2px">${outliers.map(d=>d.label).join(', ')}</div>
+      </div>`;
+    } else if (outliers.length && ST.scShowOutliers) {
+      lhtml+=`<div style="margin-top:8px;padding:6px 8px;background:var(--bg3);border-radius:4px;cursor:pointer" onclick="toggleScOutliers()">
+        <span style="font-size:10px;color:var(--tx2)">◉ Ocultar outliers (${outliers.length})</span>
+      </div>`;
+    }
+    legendEl.innerHTML=lhtml;
+  }
+
+  const canvas=document.getElementById('sc-chart');
+  if (!canvas) return;
+
+  // Dataset per BU
+  const datasets=Object.entries(buGroups).map(([buShort, pts])=>({
+    label:buShort,
+    data:pts.map(d=>({x:d.x, y:d.y, label:d.label, name:d.name})),
+    backgroundColor:BU_COLORS[buShort]||BU_COLORS['OTH'],
+    pointRadius:5, pointHoverRadius:7,
+  }));
+
+  if (chart) chart.destroy();
+  const curLbl=ST.currency==='eur'?'EUR k':(CURRENCIES[countries[0]]||'k');
+  chart=new Chart(canvas,{type:'scatter',data:{datasets},options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{
+        const d=ctx.raw;
+        return [`${d.label}`,`${d.name?.substring(0,30)||''}`,`Sales: ${fmtResult(d.x)} ${curLbl}`,`UP%: ${d.y?.toFixed(1)}%`];
+      }}}
+    },
+    scales:{
+      x:{ticks:{color:'#555d75',font:{size:10}},grid:{color:'rgba(128,128,128,.1)'},title:{display:true,text:`Sales (${curLbl})`,color:'#555d75',font:{size:11}}},
+      y:{ticks:{color:'#555d75',font:{size:10}},grid:{color:'rgba(128,128,128,.1)'},title:{display:true,text:'UP%',color:'#555d75',font:{size:11}}}
+    }
+  }});
+}
+
+function toggleScOutliers() {
+  ST.scShowOutliers=!ST.scShowOutliers;
+  buildScatter();
+}
+
+function buildTopBot() {
+  const latestYear=2026;
+  const periodsR=getScopePeriods(ST.tbScope,ST.tbSelMonths,latestYear,'R');
+  let periodsC=[];
+  if (ST.tbCmp==='B') periodsC=getScopePeriods(ST.tbScope,ST.tbSelMonths,latestYear,'B');
+  else if (ST.tbCmp==='LY') periodsC=getScopePeriods(ST.tbScope,ST.tbSelMonths,latestYear-1,'R');
+  else { const pm=new Set([...ST.tbSelMonths].map(m=>m>1?m-1:12)); periodsC=getScopePeriods(ST.tbScope,pm,latestYear,'R'); }
+
+  const countries=getCountries();
+  const items=[];
+  const salesEpis=getSalesEpis();
+  const allCostEpis=[];
+  for (const sec of SECTIONS_ORDER) {
+    if (FLAT_SECTIONS.has(sec)) for (const e of GROUPS_ORDER[sec]) allCostEpis.push(e);
+    else for (const grp of GROUPS_ORDER[sec]) for (const e of (EPI_ORDER[grp]||[])) allCostEpis.push(e);
+  }
+
+  for (const c of countries) {
+    const otIndex=META.ot_index[c]||{};
+    for (const [code, info] of Object.entries(otIndex)) {
+      if (ST.bu!=='ALL' && info.b!==ST.bu) continue;
+      let salesR=0, salesC=0, costR=0, costC=0;
+      for (const epi of salesEpis) {
+        for (const p of periodsR) salesR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+        for (const p of periodsC) salesC+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+      }
+      for (const epi of allCostEpis) {
+        for (const p of periodsR) costR+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+        for (const p of periodsC) costC+=(OT_DATA?.[c]?.[p]?.[code]?.[epi]||0);
+      }
+      const scale=ST.currency==='eur'?toEurScale(c,'R',latestYear,periodsR):1/getDivisor(c);
+      const scaleC2=ST.currency==='eur'?toEurScale(c,'B',latestYear,periodsC):1/getDivisor(c);
+      const upR=(salesR+costR)*scale, upC=(salesC+costC)*scaleC2;
+      const salesRS=salesR*scale, salesCS=salesC*scaleC2;
+      const upPctR=salesR?((salesR+costR)/salesR*100):null;
+      const upPctC=salesC?((salesC+costC)/salesC*100):null;
+      const dSales=salesRS-salesCS, dUp=upR-upC;
+      const dUpPct=(upPctR!==null&&upPctC!==null)?upPctR-upPctC:null;
+      const buShort=BU_SHORT[c+':'+info.b]||BU_SHORT['ALL:'+info.b]||info.b||'';
+      const metric=ST.tbMet==='sales'?dSales:ST.tbMet==='up'?dUp:(dUpPct??0);
+      if (salesRS===0&&salesCS===0) continue;
+      items.push({code, name:info.n, bu:buShort, salesR:salesRS, dSales, upR, dUp, upPctR, dUpPct, metric});
+    }
+  }
+
+  items.sort((a,b)=>b.metric-a.metric);
+  const top=items.slice(0,ST.tbN);
+  const bot=[...items].sort((a,b)=>a.metric-b.metric).slice(0,ST.tbN);
+
+  function renderTable(rows, isTop) {
+    let h=`<thead><tr>
+      <th>Contrato</th><th>Div</th>
+      <th>Sales R</th><th>Δ Sales</th>
+      <th>UP%</th><th>Δ UP%</th>
+    </tr></thead><tbody>`;
+    for (const i of rows) {
+      const dSalesC=i.dSales>=0?'vp':'vn';
+      const dPpC=i.dUpPct!==null?(i.dUpPct>=0?'vp':'vn'):'';
+      const upPctC=i.upPctR!==null?(i.upPctR<0?'vn':''):'';
+      h+=`<tr>
+        <td><div class="cts-code">${i.code}</div><div class="cts-name">${i.name}</div></td>
+        <td class="cts-bu">${i.bu}</td>
+        <td>${fmtResult(i.salesR)}</td>
+        <td class="${dSalesC}">${fmtDelta(i.dSales)}</td>
+        <td class="${upPctC}">${i.upPctR!==null?i.upPctR.toFixed(1)+'%':'—'}</td>
+        <td class="${dPpC}">${i.dUpPct!==null?fmtPp(i.dUpPct):'—'}</td>
+      </tr>`;
+    }
+    h+='</tbody>';
+    return h;
+  }
+
+  document.getElementById('tbl-top').innerHTML=renderTable(top,true);
+  document.getElementById('tbl-bot').innerHTML=renderTable(bot,false);
+}
+
+// ── OT ZOOM ────────────────────────────────────────────────────────────────
+function closeOtZoom(e) {
+  if (!e || e.target===document.getElementById('ot-zoom-overlay'))
+    document.getElementById('ot-zoom-overlay').classList.remove('on');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+function initDashboard() {
+  ST.currency='eur';
+  updateCurrencyLock();
+  updateBUFilter();
+  buildExec();
+  document.getElementById('topbar-sub').textContent='Real Feb 2026 · Budget FY 2026';
+  // Assegurar que el botó de tema reflecteix l'estat inicial (clar)
+  const btn=document.getElementById('theme-toggle');
+  if(btn) btn.textContent='● Oscuro';
+}
+
+// Arrancar
+window.addEventListener('DOMContentLoaded', () => loadData());
+</script>
+</body>
+</html>
